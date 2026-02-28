@@ -122,4 +122,3 @@ def delete_page(id):
     db.session.delete(page)
     db.session.commit()
     return jsonify({"message": f"Page {id} eliminada"}), 200
-
