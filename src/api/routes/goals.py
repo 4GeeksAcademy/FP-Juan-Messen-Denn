@@ -8,7 +8,7 @@ goals_bp = Blueprint("goals_bp", __name__)
 
 
 
-@goals_bp.route('/goals', methods=['GET'])
+@goals_bp.route('/', methods=['GET'])
 def get_goals():
     goals = Goals.query.all()
     if not goals:
@@ -16,7 +16,7 @@ def get_goals():
     response = [goal.serialize() for goal in goals]
     return jsonify(response), 200
 
-@goals_bp.route('/goals/<int:goals_id>', methods=['GET'])
+@goals_bp.route('/<int:goals_id>', methods=['GET'])
 def get_single_goal(goals_id):
     goal = Goals.query.get(goals_id)
     if not goal:
@@ -76,7 +76,7 @@ def update_goal(goal_id):
         "goal": goal.serialize()
     }), 200
 
-@goals_bp.route('/goals/<int:goal_id>', methods=['DELETE'])
+@goals_bp.route('/<int:goal_id>', methods=['DELETE'])
 def delete_goal(goal_id):
     
     goal = db.session.get(Goals, goal_id)
@@ -89,7 +89,7 @@ def delete_goal(goal_id):
     return jsonify({
         "message": "Goal delete successfully"}), 200
 
-@goals_bp.route('/goals', methods=['DELETE'])
+@goals_bp.route('/', methods=['DELETE'])
 def delete_all_goals():
 
     goals = Goals.query.all()
