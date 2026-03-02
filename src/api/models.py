@@ -3,6 +3,7 @@ from sqlalchemy import String, Boolean, Text, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timezone
 from typing import List
+from flask_bcrypt import generate_password_hash
 
 db = SQLAlchemy()
 
@@ -14,8 +15,11 @@ class User(db.Model):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(
         String(120), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(nullable=False)
+    password_hash: Mapped[str] = mapped_column(nullable=False)
     avatar_url: Mapped[str] = mapped_column(String(500), unique=True)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password).decode('utf-8')
 
     # cascade-delete permite que, al borrar user, se borren todos los folders, lo mismo con goals.leer más en la documetacion,
     folders: Mapped[List["Folder"]] = relationship(

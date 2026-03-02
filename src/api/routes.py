@@ -10,8 +10,6 @@ api = Blueprint('api', __name__)
 
 CORS(api)
 
-
-
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
     return jsonify({"message": "Hello! I'm a message that came from the backend"}), 200
