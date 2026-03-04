@@ -3,6 +3,7 @@ from sqlalchemy import String, Boolean, Text, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timezone
 from typing import List
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
@@ -11,11 +12,16 @@ class User(db.Model):
     __tablename__ = "user_table"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    name: Mapped[str] = mapped_column(String(120), nullable=True)
     email: Mapped[str] = mapped_column(
         String(120), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(nullable=False)
-    avatar_url: Mapped[str] = mapped_column(String(500), unique=True)
+    password_hash: Mapped[str] = mapped_column(nullable=False)
+    avatar_url: Mapped[str] = mapped_column(String(500), unique=True, nullable=True)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password).decode('utf-8')
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     # cascade-delete permite que, al borrar user, se borren todos los folders, lo mismo con goals.leer más en la documetacion,
     folders: Mapped[List["Folder"]] = relationship(
@@ -63,12 +69,11 @@ class Page(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(
-        String(120), unique=True, nullable=False)
+        String(120), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
-    update_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    update_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=lambda: datetime.now(timezone.utc),onupdate=lambda: datetime.now(timezone.utc)
+)
 
     folder_id: Mapped[int] = mapped_column(
         ForeignKey("folder_table.id"), nullable=False)
