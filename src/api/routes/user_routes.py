@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from api.models import db, User
+import secrets
 
 user_routes_bp = Blueprint('user_routes_bp', __name__)
 
@@ -132,3 +133,49 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+#recuperacion de contraseña
+
+@user_routes_bp.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.get_json()
+    email = data.get('email')
+    if not email:
+        return jsonify({"message": "Email is required"}), 400
+    
+    user = db.session.execute(
+            db.select(User).where(User.email == email)
+        ).scalar_one_or_none()
+
+    if user is None:
+        return jsonify({"message": "User not found"}), 404
+    
+    token = create_access_token(identity=str(user.id))
+    
+    user.reset_token = token
+    db.session.commit()
+
+    return jsonify({"message": "Password reset token generated", "token": token}), 200
+    
+
+@user_routes_bp.route('/reset-password', methods=['POST'])
+def reset_password():
+    data = request.get_json()
+    token = data.get('token')
+    new_password = data.get('password')
+
+    if not token or not new_password:
+        return jsonify({"message": "Token and password are required"}), 400
+
+    user = db.session.execute(
+        db.select(User).where(User.reset_token == token)
+    ).scalar_one_or_none()
+
+    if user is None:
+        return jsonify({"message": "Invalid or expired token"}), 404
+
+    user.set_password(new_password)  
+    user.reset_token = None         
+    db.session.commit()
+
+    return jsonify({"message": "Password updated successfully"}), 200
