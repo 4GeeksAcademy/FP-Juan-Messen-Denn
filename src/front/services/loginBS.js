@@ -1,4 +1,5 @@
 
+
 export const loginUser = async (user) => {
     const response = await fetch (`${import.meta.env.VITE_BACKEND_URL}/api/user/login`, {
         method: "POST",
@@ -13,16 +14,15 @@ export const loginUser = async (user) => {
     }
     return data;
 }
-
 export const forgotPassword = async (email) => {
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: email.toLowerCase() }),
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
-    return data;
+    return data; 
 };
 
 export const resetPassword = async (token, password) => {
