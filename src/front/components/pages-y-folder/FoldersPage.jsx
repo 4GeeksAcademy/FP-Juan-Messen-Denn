@@ -1,0 +1,280 @@
+import { useState, useEffect } from "react";
+import FolderPanel from "./FolderPanel";
+import PagePanel from "./PagePanel";
+import { getPages, createPage, updatePage, deletePage } from "./PageServices";
+import { getFolders, createFolder, updateFolder, deleteFolder } from "./FolderServices";
+import "./FoldersPage.css"
+
+const FoldersPage = () => {
+    const [folders, setFolders] = useState([]);
+    const [pages, setPages] = useState([]);
+    const [activeFolder, setActiveFolder] = useState(null);
+    const [editMode, setEditMode] = useState(false);
+    const [selectedFolders, setSelectedFolders] = useState([]);
+    const [openPage, setOpenPage] = useState(null);
+    const [showCreateForm, setShowCreateForm] = useState(false);
+
+    const [showFolderModal, setShowFolderModal] = useState(false);
+    const [confirmModal, setConfirmModal] = useState(null);
+    const [moveModal, setMoveModal] = useState(null);
+
+    const [newFolderTitle, setNewFolderTitle] = useState("");
+    const [moveTarget, setMoveTarget] = useState("");
+
+    useEffect(() => {
+        const loadFolders = async () => {
+            const data = await getFolders();
+            if (data) setFolders(data);
+        };
+        loadFolders();
+    }, []);
+
+    useEffect(() => {
+        if (!activeFolder) return;
+        const loadPages = async () => {
+            const data = await getPages(activeFolder.id);
+            if (data) {
+                setPages(prev => {
+                    const filtered = prev.filter(p => p.folder.id !== activeFolder.id);
+                    return [...filtered, ...data];
+                });
+            }
+        };
+        loadPages();
+    }, [activeFolder]);
+
+    const folderPages = activeFolder ? pages.filter(p => p.folder.id === activeFolder.id) : [];
+
+    const toggleSelect = (id) => {
+        setSelectedFolders(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+    };
+
+    const handleCreateFolder = async () => {
+        if (!newFolderTitle.trim()) return;
+        const data = await createFolder(newFolderTitle);
+        if (data) setFolders(prev => [...prev, data]);
+        setNewFolderTitle("");
+        setShowFolderModal(false);
+    };
+
+    const handleDeleteFolders = async () => {
+        for (const id of selectedFolders) await deleteFolder(id);
+        setFolders(prev => prev.filter(f => !selectedFolders.includes(f.id)));
+        setPages(prev => prev.filter(p => !selectedFolders.includes(p.folder.id)));
+        if (activeFolder && selectedFolders.includes(activeFolder.id)) setActiveFolder(null);
+        setSelectedFolders([]);
+        setEditMode(false);
+        setConfirmModal(null);
+    };
+
+    const handleRenameFolder = async (id, newTitle) => {
+        const data = await updateFolder(id, newTitle);
+        if (data) setFolders(prev => prev.map(f => f.id === id ? { ...f, title: newTitle } : f));
+    };
+
+    const handleCreatePage = async (title, content) => {
+        const data = await createPage(activeFolder.id, title, content);
+        if (data) setPages(prev => [...prev, data]);
+        setShowCreateForm(false);
+    };
+
+    const handleUpdatePage = async (id, title, content) => {
+        const data = await updatePage(id, title, content);
+        if (data) setPages(prev => prev.map(p => p.id === id ? { ...p, title, content } : p));
+    };
+
+    const handleDeletePage = async (page) => {
+        await deletePage(page.id);
+        setPages(prev => prev.filter(p => p.id !== page.id));
+        setConfirmModal(null);
+    };
+
+    const confirmLabel = selectedFolders.length === 1
+        ? `la carpeta "${folders.find(f => f.id === selectedFolders[0])?.title}"`
+        : `estas ${selectedFolders.length} carpetas`;
+
+    return (
+        <>
+            <div className="fp-page">
+                <div className="fp-layout">
+                    {/* SIDEBAR */}
+                    <div className="fp-sidebar">
+                        <div className="fp-sidebar-header">
+                            <span className="fp-sidebar-title">📁 Carpetas</span>
+                            <div className="fp-sidebar-btns">
+                                <button
+                                    className="fp-icon-btn edit"
+                                    onClick={() => { setEditMode(!editMode); setSelectedFolders([]); }}
+                                >✏️</button>
+                                {editMode && (
+                                    <button
+                                        className="fp-icon-btn del"
+                                        disabled={selectedFolders.length === 0}
+                                        onClick={() => setConfirmModal({ type: "folders" })}
+                                    >🗑️</button>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="fp-sidebar-body">
+                            <FolderPanel
+                                folders={folders}
+                                pages={pages}
+                                activeFolder={activeFolder}
+                                onSelectFolder={setActiveFolder}
+                                editMode={editMode}
+                                selectedFolders={selectedFolders}
+                                onToggleSelect={toggleSelect}
+                                onRenameFolder={handleRenameFolder}
+                            />
+                        </div>
+
+                        <div className="fp-sidebar-footer">
+                            {editMode && (
+                                <button
+                                    className="fp-delete-selected"
+                                    disabled={selectedFolders.length === 0}
+                                    onClick={() => setConfirmModal({ type: "folders" })}
+                                >
+                                    Eliminar {selectedFolders.length > 0 ? `(${selectedFolders.length})` : "seleccionados"}
+                                </button>
+                            )}
+                            <button className="fp-new-folder-btn" onClick={() => setShowFolderModal(true)}>
+                                + Nueva carpeta
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* MAIN */}
+                    <div className="fp-main">
+                        <div className="fp-main-header">
+                            <span className="fp-main-title">
+                                {activeFolder ? `📂 ${activeFolder.title}` : "Selecciona una carpeta"}
+                            </span>
+                            {activeFolder && !showCreateForm && (
+                                <button className="fp-new-page-btn" onClick={() => setShowCreateForm(true)}>
+                                    + Nueva página
+                                </button>
+                            )}
+                        </div>
+                        <div className="fp-main-body">
+                            <PagePanel
+                                pages={pages}
+                                activeFolder={activeFolder}
+                                onOpenPage={setOpenPage}
+                                onMovePage={(page) => { setMoveModal(page); setMoveTarget(""); }}
+                                onDeletePage={(page) => setConfirmModal({ type: "page", id: page.id, title: page.title })}
+                                onCreatePage={() => setShowCreateForm(true)}
+                                onUpdatePage={handleUpdatePage}
+                                showCreateForm={showCreateForm}
+                                onCancelCreate={() => setShowCreateForm(false)}
+                                onSubmitCreate={handleCreatePage}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* PAGE DETAIL */}
+            {openPage && (
+                <div className="fp-overlay" onClick={() => setOpenPage(null)}>
+                    <div className="fp-detail" onClick={e => e.stopPropagation()}>
+                        <div className="fp-detail-header">
+                            <div className="fp-detail-title">{openPage.title}</div>
+                            <button className="fp-detail-close" onClick={() => setOpenPage(null)}>✕</button>
+                        </div>
+                        <div className="fp-detail-body">
+                            <div className="fp-detail-content">{openPage.content}</div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL CREAR CARPETA */}
+            {showFolderModal && (
+                <div className="fp-overlay" onClick={() => setShowFolderModal(false)}>
+                    <div className="fp-modal" onClick={e => e.stopPropagation()}>
+                        <div className="fp-modal-title">Nueva carpeta</div>
+                        <div className="fp-input-group">
+                            <label className="fp-label">Nombre</label>
+                            <input
+                                className="fp-input"
+                                placeholder="Nombre de la carpeta..."
+                                value={newFolderTitle}
+                                onChange={e => setNewFolderTitle(e.target.value)}
+                                onKeyDown={e => e.key === "Enter" && handleCreateFolder()}
+                                autoFocus
+                            />
+                        </div>
+                        <div className="fp-modal-actions">
+                            <button className="fp-btn-cancel" onClick={() => setShowFolderModal(false)}>Cancelar</button>
+                            <button className="fp-btn-primary" onClick={handleCreateFolder}>Crear</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL MOVER PÁGINA */}
+            {moveModal && (
+                <div className="fp-overlay" onClick={() => setMoveModal(null)}>
+                    <div className="fp-modal" onClick={e => e.stopPropagation()}>
+                        <div className="fp-modal-title">Cambiar de carpeta</div>
+                        <div className="fp-input-group">
+                            <label className="fp-label">Carpeta destino</label>
+                            <select
+                                className="fp-select"
+                                value={moveTarget}
+                                onChange={e => setMoveTarget(e.target.value)}
+                            >
+                                <option value="">-- Selecciona --</option>
+                                {folders.filter(f => f.id !== moveModal.folder.id).map(f => (
+                                    <option key={f.id} value={f.id}>{f.title}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="fp-modal-actions">
+                            <button className="fp-btn-cancel" onClick={() => setMoveModal(null)}>Cancelar</button>
+                            <button className="fp-btn-primary" disabled={!moveTarget} onClick={() => {
+                                const targetFolder = folders.find(f => f.id === parseInt(moveTarget));
+                                setPages(prev => prev.map(p => p.id === moveModal.id
+                                    ? { ...p, folder: { id: targetFolder.id, title: targetFolder.title } }
+                                    : p
+                                ));
+                                setMoveModal(null);
+                                setMoveTarget("");
+                            }}>Mover</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL CONFIRMAR ELIMINAR */}
+            {confirmModal && (
+                <div className="fp-overlay" onClick={() => setConfirmModal(null)}>
+                    <div className="fp-modal confirm" onClick={e => e.stopPropagation()}>
+                        <div className="fp-modal-icon">🗑️</div>
+                        <div className="fp-modal-title">¿Estás seguro?</div>
+                        <p>
+                            Vas a eliminar {confirmModal.type === "page"
+                                ? `la página "${confirmModal.title}"`
+                                : confirmLabel
+                            }.<br />Esta acción no se puede deshacer.
+                        </p>
+                        <div className="fp-modal-actions">
+                            <button className="fp-btn-cancel" onClick={() => setConfirmModal(null)}>Cancelar</button>
+                            <button
+                                className="fp-btn-danger"
+                                onClick={confirmModal.type === "page"
+                                    ? () => handleDeletePage({ id: confirmModal.id, title: confirmModal.title })
+                                    : handleDeleteFolders
+                                }
+                            >Sí, eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+};
+
+export default FoldersPage;
