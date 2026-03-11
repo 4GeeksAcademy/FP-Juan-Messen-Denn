@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from api.models import db, User
 import secrets
+import resend
+import os
 
 user_routes_bp = Blueprint('user_routes_bp', __name__)
 
@@ -122,40 +124,43 @@ def delete_user():
 
 
 
-
-
-# codigo de la academia:
-@user_routes_bp.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
-
-    response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
-
-    return jsonify(response_body), 200
-
 #recuperacion de contraseña
 
 @user_routes_bp.route('/forgot-password', methods=['POST'])
 def forgot_password():
     data = request.get_json()
-    email = data.get('email')
+    email = data.get('email', '').lower() 
     if not email:
         return jsonify({"message": "Email is required"}), 400
     
     user = db.session.execute(
-            db.select(User).where(User.email == email)
-        ).scalar_one_or_none()
+        db.select(User).where(User.email == email)
+    ).scalar_one_or_none()
 
     if user is None:
         return jsonify({"message": "User not found"}), 404
     
     token = create_access_token(identity=str(user.id))
-    
     user.reset_token = token
     db.session.commit()
 
-    return jsonify({"message": "Password reset token generated", "token": token}), 200
+
+    resend.api_key = os.getenv("RESEND_API_KEY")
+    
+    resend.Emails.send({
+        "from": "onboarding@resend.dev", 
+        "to": [email],
+        "subject": "Reset your password - Pomify",
+        "html": f"""
+            <h2>Reset your password</h2>
+            <p>Click the link below to reset your password. It expires in 1 hour.</p>
+            <a href="{os.getenv('FRONTEND_URL')}/reset-password?token={token}">
+                Reset password
+            </a>
+        """
+    })
+
+    return jsonify({"message": "Password reset email sent"}), 200
     
 
 @user_routes_bp.route('/reset-password', methods=['POST'])
@@ -179,3 +184,15 @@ def reset_password():
     db.session.commit()
 
     return jsonify({"message": "Password updated successfully"}), 200
+
+
+
+# codigo de la academia:
+@user_routes_bp.route('/hello', methods=['POST', 'GET'])
+def handle_hello():
+
+    response_body = {
+        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
+    }
+
+    return jsonify(response_body), 200

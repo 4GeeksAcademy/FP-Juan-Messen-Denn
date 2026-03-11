@@ -56,13 +56,12 @@ export const LoginModal = ({ onClose, onSwitchToRegister }) => {
         e.preventDefault();
         if (!forgotEmail) { setForgotMessage("Please enter your email."); return; }
         try {
-            const data = await forgotPassword(forgotEmail);
-            navigate(`/reset-password?token=${data.token}`);
-            onClose();
+            await forgotPassword(forgotEmail);
+            setForgotMessage("Check your email for the reset link!");
         } catch (err) {
             setForgotMessage(err.message);
         }
-    };
+};
 
 
 
