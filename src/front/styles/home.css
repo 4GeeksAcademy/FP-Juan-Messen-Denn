@@ -1,0 +1,33 @@
+.home-layout {
+    display: grid;
+    grid-template-columns: 1fr 1px 1.4fr; /* izquierda | divisor | derecha */
+    min-height: calc(100vh - 60px); /* descuenta la navbar */
+    background: #E8EDE6;
+    font-family: 'Inter', 'DM Sans', sans-serif;
+}
+
+/* ── Zona izquierda ── */
+.home-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 1.5rem;
+}
+
+/* ── Divisor vertical ── */
+.home-divider {
+    background: #B0BBA8;
+    width: 1px;
+    align-self: stretch;
+    margin: 2rem 0;
+}
+
+/* ── Zona derecha ── */
+.home-right {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    overflow-y: auto;
+}
