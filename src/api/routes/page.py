@@ -4,9 +4,9 @@ from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-page_bp = Blueprint("page_bp", __name__)
+pages_bp = Blueprint("pages_bp", __name__)
 
-@page_bp.route('/<int:id>', methods=['GET'])
+@pages_bp.route('/<int:id>', methods=['GET'])
 @jwt_required()
 def get_page(id):
     current_user_id = get_jwt_identity()
@@ -20,7 +20,7 @@ def get_page(id):
         return jsonify({"error": "No autorizado"}), 403
     return jsonify(page.serialize()), 200
 
-@page_bp.route('/<int:id>', methods=['PUT'])
+@pages_bp.route('/<int:id>', methods=['PUT'])
 @jwt_required()
 def update_page(id):
     current_user_id = get_jwt_identity()
@@ -44,7 +44,7 @@ def update_page(id):
     db.session.commit()
     return jsonify(page.serialize()), 200
 
-@page_bp.route('/<int:id>', methods=['DELETE'])
+@pages_bp.route('/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_page(id):
     current_user_id = get_jwt_identity()

@@ -47,7 +47,7 @@ export const LoginModal = ({ onClose, onSwitchToRegister }) => {
             const data = await loginUser(user);
             localStorage.setItem("token", data.token);
             onClose();
-            navigate("/home");
+            navigate("/folders");
         } catch (err) {
             setError(err.message);
         }
