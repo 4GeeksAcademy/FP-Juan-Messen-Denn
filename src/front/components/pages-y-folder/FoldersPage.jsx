@@ -100,7 +100,7 @@ const FoldersPage = () => {
                     {/* SIDEBAR */}
                     <div className="fp-sidebar">
                         <div className="fp-sidebar-header">
-                            <span className="fp-sidebar-title">📁 Carpetas</span>
+                            <span className="fp-sidebar-title">Carpetas</span>
                             <div className="fp-sidebar-btns">
                                 <button
                                     className="fp-icon-btn edit"
@@ -149,7 +149,7 @@ const FoldersPage = () => {
                     <div className="fp-main">
                         <div className="fp-main-header">
                             <span className="fp-main-title">
-                                {activeFolder ? `📂 ${activeFolder.title}` : "Selecciona una carpeta"}
+                                {activeFolder ? activeFolder.title : "Selecciona una carpeta"}
                             </span>
                             {activeFolder && !showCreateForm && (
                                 <button className="fp-new-page-btn" onClick={() => setShowCreateForm(true)}>

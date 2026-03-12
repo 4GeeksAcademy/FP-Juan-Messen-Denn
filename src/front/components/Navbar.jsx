@@ -42,7 +42,7 @@ export const Navbar = () => {
                     <div className="d-flex flex-column flex-lg-row gap-2 ms-auto">
                         {isLoggedIn && (
                             <Link to="/folders" onClick={() => setIsOpen(false)}>
-                                <button className="btn btn-outline-light w-100">📁 mis carpetas</button>
+                                <button className="btn btn-outline-light w-100">mis carpetas</button>
                             </Link>
                         )}
 

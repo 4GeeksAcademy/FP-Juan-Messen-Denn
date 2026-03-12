@@ -17,7 +17,7 @@ export const forgotPassword = async (email) => {
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: email.toLowerCase() }),
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);

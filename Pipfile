@@ -23,6 +23,7 @@ flask-jwt = "*"
 flask-bcrypt = "*"
 flask-jwt-extended = "*"
 flask-mail = "*"
+resend = "*"
 
 [requires]
 python_version = "3.13"
