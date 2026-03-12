@@ -11,6 +11,7 @@ import { WelcomePage } from "./pages/WelcomePage";
 import { PublicLayout } from "./pages/PublicLayout";
 import { ResetPassword } from "./pages/ResetPassword";
 import FoldersPage from "./components/pages-y-folder/FoldersPage";
+import { SoundList } from "./pages/API-externa/Freesound";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,6 +28,7 @@ export const router = createBrowserRouter(
         <Route path="/single/:theId" element={<Single />} />
         <Route path="/demo" element={<Demo />} />
         <Route path="/folders" element={<FoldersPage />} />
+        <Route path="/music" element={<SoundList />} />
       </Route>
     </>
   )
