@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import FolderPanel from "./FolderPanel";
 import PagePanel from "./PagePanel";
 import { getPages, createPage, updatePage, deletePage } from "./PageServices";
@@ -6,6 +7,7 @@ import { getFolders, createFolder, updateFolder, deleteFolder } from "./FolderSe
 import "./FoldersPage.css"
 
 const FoldersPage = () => {
+    const navigate = useNavigate();
     const [folders, setFolders] = useState([]);
     const [pages, setPages] = useState([]);
     const [activeFolder, setActiveFolder] = useState(null);
@@ -13,6 +15,7 @@ const FoldersPage = () => {
     const [selectedFolders, setSelectedFolders] = useState([]);
     const [openPage, setOpenPage] = useState(null);
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [showMobileMain, setShowMobileMain] = useState(false);
 
     const [showFolderModal, setShowFolderModal] = useState(false);
     const [confirmModal, setConfirmModal] = useState(null);
@@ -47,6 +50,11 @@ const FoldersPage = () => {
 
     const toggleSelect = (id) => {
         setSelectedFolders(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+    };
+
+    const handleSelectFolder = (folder) => {
+        setActiveFolder(folder);
+        setShowMobileMain(true);
     };
 
     const handleCreateFolder = async () => {
@@ -97,10 +105,18 @@ const FoldersPage = () => {
         <>
             <div className="fp-page">
                 <div className="fp-layout">
-                    {/* SIDEBAR */}
-                    <div className="fp-sidebar">
+
+                    {/* SIDEBAR — oculto en mobile cuando hay carpeta activa */}
+                    <div className={`fp-sidebar ${showMobileMain ? 'd-none d-md-flex' : 'd-flex'}`}>
                         <div className="fp-sidebar-header">
-                            <span className="fp-sidebar-title">Carpetas</span>
+                            <div className="d-flex align-items-center gap-2">
+                                <button
+                                    className="fp-btn-cancel"
+                                    onClick={() => navigate("/home")}
+                                    style={{ padding: '6px 12px', fontSize: '12px' }}
+                                >← Home</button>
+                                <span className="fp-sidebar-title">Carpetas</span>
+                            </div>
                             <div className="fp-sidebar-btns">
                                 <button
                                     className="fp-icon-btn edit"
@@ -121,7 +137,7 @@ const FoldersPage = () => {
                                 folders={folders}
                                 pages={pages}
                                 activeFolder={activeFolder}
-                                onSelectFolder={setActiveFolder}
+                                onSelectFolder={handleSelectFolder}
                                 editMode={editMode}
                                 selectedFolders={selectedFolders}
                                 onToggleSelect={toggleSelect}
@@ -132,25 +148,33 @@ const FoldersPage = () => {
                         <div className="fp-sidebar-footer">
                             {editMode && (
                                 <button
-                                    className="fp-delete-selected"
+                                    className="fp-delete-selected w-100 mb-2"
                                     disabled={selectedFolders.length === 0}
                                     onClick={() => setConfirmModal({ type: "folders" })}
                                 >
                                     Eliminar {selectedFolders.length > 0 ? `(${selectedFolders.length})` : "seleccionados"}
                                 </button>
                             )}
-                            <button className="fp-new-folder-btn" onClick={() => setShowFolderModal(true)}>
+                            <button className="fp-new-folder-btn w-100" onClick={() => setShowFolderModal(true)}>
                                 + Nueva carpeta
                             </button>
                         </div>
                     </div>
 
-                    {/* MAIN */}
-                    <div className="fp-main">
+                    {/* MAIN — oculto en mobile cuando no hay carpeta activa */}
+                    <div className={`fp-main ${!showMobileMain ? 'd-none d-md-flex' : 'd-flex'}`}>
                         <div className="fp-main-header">
-                            <span className="fp-main-title">
-                                {activeFolder ? activeFolder.title : "Selecciona una carpeta"}
-                            </span>
+                            <div className="d-flex align-items-center gap-2">
+                                {/* Botón volver en mobile */}
+                                <button
+                                    className="fp-btn-cancel d-md-none"
+                                    onClick={() => setShowMobileMain(false)}
+                                    style={{ padding: '6px 12px', fontSize: '12px' }}
+                                >← Carpetas</button>
+                                <span className="fp-main-title">
+                                    {activeFolder ? activeFolder.title : "Selecciona una carpeta"}
+                                </span>
+                            </div>
                             {activeFolder && !showCreateForm && (
                                 <button className="fp-new-page-btn" onClick={() => setShowCreateForm(true)}>
                                     + Nueva página
