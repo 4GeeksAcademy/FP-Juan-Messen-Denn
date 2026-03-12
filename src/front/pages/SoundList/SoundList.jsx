@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react"
 import { searchSounds } from "../SoundList/freesound"
-import "../SoundList/freesound"
+import "../SoundList/freesound.css"
 
 export const SoundList = () => {
 
