@@ -86,7 +86,6 @@ const PagePanel = ({
     setEditContent('');
   };
 
-  // Vista: formulario inline de edición
   if (editingPage) return (
     <div className="page-create-form">
       <div className="page-create-header">
@@ -117,7 +116,6 @@ const PagePanel = ({
     </div>
   );
 
-  // Vista: formulario inline de creación
   if (showCreateForm) return (
     <div className="page-create-form">
       <div className="page-create-header">
@@ -150,14 +148,23 @@ const PagePanel = ({
 
   if (!activeFolder) return (
     <div className="page-empty">
-      <div className="page-empty-icon">📁</div>
+      <div className="page-empty-icon">
+        <svg width="48" height="48" viewBox="0 0 100 100" fill="#457b9d" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 25 C10 20 14 16 19 16 L38 16 C41 16 44 18 46 20 L50 25 L85 25 C90 25 94 29 94 34 L94 78 C94 83 90 87 85 87 L15 87 C10 87 6 83 6 78 L6 30 C6 27 8 25 10 25 Z"/>
+        </svg>
+      </div>
       <div className="page-empty-text">Selecciona una carpeta para ver sus páginas</div>
     </div>
   );
 
   if (folderPages.length === 0) return (
     <div className="page-empty">
-      <div className="page-empty-icon">📝</div>
+      <div className="page-empty-icon">
+        <svg width="48" height="48" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 30 L6 78 C6 83 10 87 15 87 L85 87 C90 87 94 83 94 78 L94 34 C94 29 90 25 85 25 L50 25 L46 20 C44 18 41 16 38 16 L19 16 C14 16 10 20 10 25 Z" fill="#457b9d"/>
+          <path d="M6 30 L20 30 L85 25 L94 34 L50 25 L46 20 C44 18 41 16 38 16 L19 16 C14 16 10 20 10 25 Z" fill="#2d6a8f"/>
+        </svg>
+      </div>
       <div className="page-empty-text">No hay páginas en esta carpeta</div>
       <button className="page-empty-btn" onClick={onCreatePage}>+ Crear nueva página o nota</button>
     </div>

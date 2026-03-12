@@ -40,7 +40,7 @@ const handleSubmit = async (e) => {
     try {
         await registerUser(user);
         onClose();
-        onSwitchToLogin();
+        navigate("/home");
     } catch (err) {
         setError(err.message);
     }
