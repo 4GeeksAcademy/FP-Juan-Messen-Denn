@@ -1,7 +1,8 @@
 import "../styles/pomodoroZone.css";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-const TIMER = [ { id: 1, label: "20/5 - 1 hour", focus: 20 * 60, break: 5 * 60, cycles: 3 }, 
+const TIMER = [
+    { id: 1, label: "20/5 - 1 hour", focus: 20 * 60, break: 5 * 60, cycles: 3 },
     { id: 2, label: "30/10 - 2 hours", focus: 30 * 60, break: 10 * 60, cycles: 4 },
     { id: 3, label: "60/15 - 3 hours", focus: 60 * 60, break: 15 * 60, cycles: 3 }
 ];
@@ -29,7 +30,6 @@ export const PomodoroZone = () => {
     const [completedFocusSessions, setCompletedFocusSessions] = useState(0);
     const [showBreakModal, setShowBreakModal] = useState(false);
     const [currentBreakMessage, setCurrentBreakMessage] = useState(BREAK_MESSAGES[0]);
-    const audioRef = useRef(null);
 
     useEffect(() => {
         setTimeLeft(selectedPreset.focus);
@@ -43,10 +43,7 @@ export const PomodoroZone = () => {
         if (!isRunning) return;
 
         const interval = setInterval(() => {
-            setTimeLeft((prev) => {
-                if (prev > 1) return prev - 1;
-                return 0;
-            });
+            setTimeLeft((prev) => (prev > 1 ? prev - 1 : 0));
         }, 1000);
 
         return () => clearInterval(interval);
@@ -81,33 +78,8 @@ export const PomodoroZone = () => {
         setIsMenuOpen(false);
     };
 
-    const handleStartPause = async () => {
-        if (!isRunning && audioRef.current) {
-            try {
-                await audioRef.current.play();
-            } catch (error) {}
-        }
-        if (isRunning && audioRef.current) {
-            audioRef.current.pause();
-        }
+    const handleStartPause = () => {
         setIsRunning(!isRunning);
-    };
-
-    const handlePrevious = () => {
-        if (audioRef.current) audioRef.current.currentTime = 0;
-    };
-
-    const handlePauseMusic = () => {
-        if (!audioRef.current) return;
-        if (audioRef.current.paused) {
-            audioRef.current.play();
-        } else {
-            audioRef.current.pause();
-        }
-    };
-
-    const handleSkip = () => {
-        if (audioRef.current) audioRef.current.currentTime = 0;
     };
 
     const phaseLabel = useMemo(() => {
@@ -157,13 +129,13 @@ export const PomodoroZone = () => {
                     </div>
 
                     <div className="pomodoro-controls">
-                        <button className="pomodoro-control-btn" onClick={handlePrevious}>
+                        <button className="pomodoro-control-btn">
                             regresar
                         </button>
-                        <button className="pomodoro-control-btn is-main" onClick={handlePauseMusic}>
+                        <button className="pomodoro-control-btn is-main">
                             pausar
                         </button>
-                        <button className="pomodoro-control-btn" onClick={handleSkip}>
+                        <button className="pomodoro-control-btn">
                             skip
                         </button>
                     </div>
@@ -175,12 +147,6 @@ export const PomodoroZone = () => {
                         elegir música
                     </button>
                 </div>
-
-                <audio
-                    ref={audioRef}
-                    loop
-                    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-                />
             </div>
 
             {showBreakModal && (

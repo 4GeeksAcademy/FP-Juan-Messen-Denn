@@ -45,8 +45,8 @@ setup_admin(app)
 setup_commands(app)
 
 app.register_blueprint(user_routes_bp, url_prefix='/api/user')
-app.register_blueprint(folders_bp, url_prefix='/folders')
-app.register_blueprint(pages_bp, url_prefix='/pages')
+app.register_blueprint(folders_bp, url_prefix='/api/folders')
+app.register_blueprint(pages_bp, url_prefix='/api/pages')
 app.register_blueprint(goals_bp, url_prefix='/api/goals')
 
 @app.errorhandler(APIException)
