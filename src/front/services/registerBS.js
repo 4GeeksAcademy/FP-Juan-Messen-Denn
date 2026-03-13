@@ -1,15 +1,17 @@
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 export const registerUser = async (user) => {
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/register`, {
+    const response = await fetch(`${backend_url}/auth/register`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
-        headers: {
-            "Content-Type": "application/json",
-        },
     });
-    const data = await response.json();
     if (!response.ok) {
-        throw new Error(data.message);
+        const err = await response.json();
+        throw new Error(err.message || "Error al registrarse");
     }
+    const data = await response.json();
+    
+    if (data.token) localStorage.setItem("token", data.token);
+    
     return data;
 };
-

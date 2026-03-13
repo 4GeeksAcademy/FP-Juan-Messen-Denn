@@ -38,12 +38,13 @@ const handleSubmit = async (e) => {
         return;
     }
     try {
-        await registerUser(user);
+        await registerUser(user); 
         onClose();
         navigate("/home");
     } catch (err) {
         setError(err.message);
     }
+
 };
     useEffect(() => {
         console.log("estos son los datos de user--->", user);
