@@ -1,23 +1,23 @@
-import "../styles/home.css"
+import "../styles/home.css";
 import { PomodoroZone } from "../components/PomodoroZone";
 import { PagesZone } from "../components/PagesZone";
 
 export const Home = () => {
     return (
-        <div className="home-layout">
+        <div className="home-wrapper">
+            <div className="row g-0 home-row">
 
+                <div className="col-12 col-xl-4 home-left">
+                    <PomodoroZone />
+                </div>
 
-            <section className="home-left">
-                <PomodoroZone />
-            </section>
+                <div className="home-divider d-none d-xl-block" />
 
-            <div className="home-divider" />
+                <div className="col-12 col-xl home-right">
+                    <PagesZone />
+                </div>
 
-
-            <section className="home-right">
-                <PagesZone />
-            </section>
-
+            </div>
         </div>
     );
 };

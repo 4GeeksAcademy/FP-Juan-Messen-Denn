@@ -3,14 +3,28 @@ import ScrollToTop from "../components/ScrollToTop"
 import { Navbar } from "../components/Navbar"
 import { Footer } from "../components/Footer"
 
-
-// Base component that maintains the navbar and footer throughout the page and the scroll to top functionality.
 export const Layout = () => {
+    const isMobile = window.innerWidth <= 767;
+
     return (
-            <ScrollToTop>
+        <ScrollToTop>
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                height: isMobile ? "auto" : "100vh",
+                overflow: isMobile ? "visible" : "hidden",
+                minHeight: "100vh"
+            }}>
                 <Navbar />
-                    <Outlet />              
+                <main style={{
+                    flex: 1,
+                    overflow: isMobile ? "auto" : "hidden",
+                    minHeight: 0
+                }}>
+                    <Outlet />
+                </main>
                 <Footer />
-            </ScrollToTop>
+            </div>
+        </ScrollToTop>
     )
 }
