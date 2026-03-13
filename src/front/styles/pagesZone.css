@@ -238,17 +238,12 @@
     opacity: 0.4;
     cursor: not-allowed;
 }
-
 @media (max-width: 1199px) {
     .pz-container {
         height: auto;
         overflow: visible;
-        background: #F2F5F0;
-        border: 1px solid rgba(176, 187, 168, 0.55);
-        border-radius: 18px;
-        padding: 26px 22px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
         min-height: 420px;
+        /* sin background, border, ni box-shadow → hereda el fondo verde */
     }
 
     .pz-textarea {
