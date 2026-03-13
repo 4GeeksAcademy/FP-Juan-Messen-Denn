@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getFolders, createFolder } from "./pages-y-folder/FolderServices";
 import { createPage } from "./pages-y-folder/PageServices";
-import "./PagesZone.css";
+import "../styles/pagesZone.css";
 
 export const PagesZone = () => {
     const [title, setTitle] = useState("");
