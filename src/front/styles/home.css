@@ -34,7 +34,6 @@
     align-self: stretch;
 }
 
-/* ── Móvil + Tablet (<1200px) ── */
 @media (max-width: 1199px) {
     html, body, #root {
         overflow: auto;

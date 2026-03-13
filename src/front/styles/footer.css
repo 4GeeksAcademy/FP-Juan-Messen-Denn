@@ -1,7 +1,7 @@
 .pomify-footer {
     background: #E8EDE6;
     border-top: 1px solid #B0BBA8;
-    padding: 10px 2rem;  /* antes era 14px, ahora más fino */
+    padding: 10px 2rem;  
     font-family: 'Inter', 'DM Sans', sans-serif;
 }
 .pomify-footer__inner {
@@ -26,7 +26,7 @@
     color: #6B7280;
 }
 
-/* Mobile: apilado centrado */
+
 @media (max-width: 767px) {
     .pomify-footer__inner {
         flex-direction: column;

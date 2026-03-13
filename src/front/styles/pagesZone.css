@@ -1,13 +1,12 @@
-/* ── Contenedor ── */
 .pz-container {
     display: flex;
     flex-direction: column;
-    height: 100%;      /* ← esto ya lo tienes */
+    height: 100%;     
     overflow: hidden;
     font-family: 'Inter', 'DM Sans', sans-serif;
 }
 
-/* ── Header ── */
+
 .pz-header {
     display: flex;
     align-items: center;
@@ -32,14 +31,14 @@
     gap: 10px;
 }
 
-/* Badge ✓ Guardado */
+
 .pz-saved-badge {
     font-size: 0.78rem;
     color: #6B7280;
     letter-spacing: 0.03em;
 }
 
-/* ── Dropdown ── */
+
 .pz-dropdown-wrapper {
     position: relative;
 }
@@ -92,7 +91,7 @@
     background: rgba(45, 58, 74, 0.06);
 }
 
-/* ── Inputs estilo Notion ── */
+
 .pz-input-title {
     border: none;
     outline: none;
@@ -121,20 +120,20 @@
     resize: none;
     width: 100%;
     flex: 1;
-    min-height: 0; /* crítico: sin esto desborda */
+    min-height: 0;
 }
 .pz-textarea::placeholder {
     color: #C8CEC4;
 }
 
-/* ── Error ── */
+
 .pz-error {
     font-size: 0.8rem;
     color: #B85C5C;
     margin: 0.4rem 0;
 }
 
-/* ── Botón guardar ── */
+
 .pz-save-inline-btn {
     padding: 6px 14px;
     border-radius: 8px;
@@ -189,7 +188,7 @@
     margin: 0;
 }
 
-/* Select carpeta */
+
 .pz-select {
     width: 100%;
     padding: 10px 12px;
@@ -240,7 +239,6 @@
     cursor: not-allowed;
 }
 
-/* ── Mobile y Tablet (<1200px): card visible ── */
 @media (max-width: 1199px) {
     .pz-container {
         height: auto;
