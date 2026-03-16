@@ -1,50 +1,34 @@
 import "../styles/loginModal.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { loginUser, forgotPassword } from "../services/loginBS";
 import { useNavigate } from "react-router-dom";
 
 export const LoginModal = ({ onClose, onSwitchToRegister }) => {
 
-    const [user, setUser] = useState({
-        email: "",
-        password: "",
-    });
-
+    const [user, setUser] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate();
     const [view, setView] = useState("login");
     const [forgotEmail, setForgotEmail] = useState("");
     const [forgotMessage, setForgotMessage] = useState("");
+    const navigate = useNavigate();
 
     const handleOverlayClick = (e) => {
         if (e.target === e.currentTarget) onClose();
     };
 
     const handleChange = (e) => {
-        setUser({
-            ...user,
-            [e.target.name]: e.target.value,
-        });
+        setUser({ ...user, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!user.email || !user.password) {
-            setError(<p style={{ color: "red", textAlign: "center" }}>All fields are required.</p>);
-            return;
-        }
-
-        if (!user.email) {
-            setError("Please enter your email.");
-            return;
-        }
-        if (!user.password) {
-            setError("Please enter your password.");
+            setError("All fields are required.");
             return;
         }
         try {
-            const data = await loginUser(user);
+            const data = await loginUser({ ...user, email: user.email.trim().toLowerCase() });
             localStorage.setItem("token", data.token);
             onClose();
             navigate("/home");
@@ -52,28 +36,23 @@ export const LoginModal = ({ onClose, onSwitchToRegister }) => {
             setError(err.message);
         }
     };
+
     const handleForgot = async (e) => {
         e.preventDefault();
         if (!forgotEmail) { setForgotMessage("Please enter your email."); return; }
         try {
-            await forgotPassword(forgotEmail);
+            await forgotPassword(forgotEmail.trim().toLowerCase());
             setForgotMessage("Check your email for the reset link!");
         } catch (err) {
             setForgotMessage(err.message);
         }
-};
-
-
-
-
-
+    };
 
     return (
         <div className="modal-overlay" onClick={handleOverlayClick}>
             <div className="modal-card">
 
                 <button className="modal-close" onClick={onClose}>✕</button>
-
 
                 {view === "login" ? (
                     <>
