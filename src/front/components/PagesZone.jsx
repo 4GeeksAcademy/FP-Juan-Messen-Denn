@@ -172,22 +172,21 @@ export const PagesZone = () => {
                     </div>
                 </div>
             </div>
+        </div>
 
-            <input
-                className="pz-input-title"
-                placeholder="Título..."
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-            />
+        <input
+            className="pz-input-title"
+            placeholder="Título..."
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+        />
 
-            <textarea
-                className="pz-textarea"
-                placeholder="Escribe tus notas aquí mientras trabajas..."
-                value={content}
-                onChange={e => setContent(e.target.value)}
-            />
-
-            {error && <p className="pz-error">{error}</p>}
+        <textarea
+            className="pz-textarea"
+            placeholder="Escribe tus notas aquí mientras trabajas..."
+            value={content}
+            onChange={e => setContent(e.target.value)}
+        />
 
             <button className="pz-save-btn" onClick={handleOpenSaveModal}>
                 {editingPageId ? "Guardar cambios" : "Guardar en carpeta"}
@@ -218,7 +217,8 @@ export const PagesZone = () => {
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
+        )}
 
             {/* MODAL CARGAR PÁGINA */}
             {showLoadModal && (
@@ -292,7 +292,7 @@ export const PagesZone = () => {
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
-    );
-};
+            </div>
+        )}
+    </div>
+)};
