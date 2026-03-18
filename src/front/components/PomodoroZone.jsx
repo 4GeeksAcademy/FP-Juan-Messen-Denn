@@ -1,16 +1,8 @@
-
 import "../styles/pomodoroZone.css";
-import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import { BreakModal } from "./BreakModal";
-
-const TIMER = [
-    { id: 0, label: "1/1 - test",       focus: 1 * 60,  break: 1 * 60,  cycles: 6 },
-    { id: 1, label: "20/5 - 1 hour",   focus: 20 * 60, break: 5 * 60,  cycles: 3 },
-    { id: 2, label: "30/10 - 2 hours", focus: 30 * 60, break: 10 * 60, cycles: 4 },
-    { id: 3, label: "60/15 - 3 hours", focus: 60 * 60, break: 15 * 60, cycles: 3 },
-];
-
-const calcFocusTotal = (preset) => preset.focus * preset.cycles;
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import { TIMER_PRESETS_LIST } from "../store";
 
 const formatTotal = (s) => {
     const h = Math.floor(s / 3600);
@@ -23,64 +15,10 @@ const formatTotal = (s) => {
 };
 
 export const PomodoroZone = () => {
+    const { store, dispatch } = useGlobalReducer();
+    const p = store.pomodoro;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [selectedPreset, setSelectedPreset] = useState(TIMER[1]);
-    const [focusLeft, setFocusLeft] = useState(() => calcFocusTotal(TIMER[1]));
-    const [phaseLeft, setPhaseLeft] = useState(TIMER[1].focus);
-    const [isRunning, setIsRunning] = useState(false);
-    const [currentPhase, setCurrentPhase] = useState("focus");
-    const [completedFocusSessions, setCompletedFocusSessions] = useState(0);
-    const [showBreakModal, setShowBreakModal] = useState(false);
-    const [breakSkipped, setBreakSkipped] = useState(false);
     const dropdownRef = useRef(null);
-
-    const resetToPreset = useCallback((preset) => {
-        setFocusLeft(calcFocusTotal(preset));
-        setPhaseLeft(preset.focus);
-        setIsRunning(false);
-        setCurrentPhase("focus");
-        setCompletedFocusSessions(0);
-        setShowBreakModal(false);
-        setBreakSkipped(false);
-    }, []);
-
-    useEffect(() => {
-        resetToPreset(selectedPreset);
-    }, [selectedPreset, resetToPreset]);
-
-    useEffect(() => {
-        if (!isRunning) return;
-        const interval = setInterval(() => {
-            setPhaseLeft((prev) => (prev > 1 ? prev - 1 : 0));
-            if (currentPhase === "focus") {
-                setFocusLeft((prev) => (prev > 1 ? prev - 1 : 0));
-            }
-        }, 1000);
-        return () => clearInterval(interval);
-    }, [isRunning, currentPhase]);
-
-    useEffect(() => {
-        if (phaseLeft !== 0) return;
-
-        if (currentPhase === "focus") {
-            const nextCompleted = completedFocusSessions + 1;
-            setCompletedFocusSessions(nextCompleted);
-
-            if (nextCompleted < selectedPreset.cycles) {
-                setCurrentPhase("break");
-                setPhaseLeft(selectedPreset.break);
-                setShowBreakModal(true);
-                setBreakSkipped(false);
-            } else {
-                setIsRunning(false);
-            }
-        } else {
-            setCurrentPhase("focus");
-            setPhaseLeft(selectedPreset.focus);
-            setShowBreakModal(false);
-            setBreakSkipped(false);
-        }
-    }, [phaseLeft, currentPhase, completedFocusSessions, selectedPreset]);
 
     useEffect(() => {
         if (!isMenuOpen) return;
@@ -93,46 +31,22 @@ export const PomodoroZone = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isMenuOpen]);
 
+    const phaseLabel = useMemo(() => {
+        return p.currentPhase === "focus" ? "time to focus!" : "break time";
+    }, [p.currentPhase]);
+
+    const startBtnLabel = p.breakSkipped ? "continue break" : p.isRunning ? "pause" : "start";
+    const startBtnClass = `pomodoro-start-button${p.isRunning ? " is-running" : ""}${p.breakSkipped ? " is-break-skipped" : ""}`;
+
+    const handleStartPause = () => dispatch({ type: "pomodoro_start_pause" });
+    const handleContinueBreak = () => dispatch({ type: "pomodoro_continue_break" });
+    const handleSkipBreak = (remainingBreakTime) => dispatch({ type: "pomodoro_skip_break" });
+    const handleBreakEnd = () => dispatch({ type: "pomodoro_break_end" });
+    const handleRestorePomodoro = () => dispatch({ type: "pomodoro_restore" });
     const handlePresetSelect = (preset) => {
-        setSelectedPreset(preset);
+        dispatch({ type: "pomodoro_set_preset", payload: preset });
         setIsMenuOpen(false);
     };
-
-    const handleStartPause = () => setIsRunning((prev) => !prev);
-
-    const handleSkipBreak = useCallback((remainingBreakTime) => {
-        setShowBreakModal(false);
-        setIsRunning(false);
-        setBreakSkipped(true);
-    }, []);
-
-    const handleContinueBreak = () => {
-        setCurrentPhase("break");
-        setShowBreakModal(true);
-        setBreakSkipped(false);
-        setIsRunning(true);
-    };
-
-    const handleBreakEnd = useCallback(() => {
-        setShowBreakModal(false);
-        setCurrentPhase("focus");
-        setPhaseLeft(selectedPreset.focus);
-        setBreakSkipped(false);
-    }, [selectedPreset.focus]);
-
-    const handleRestorePomodoro = () => {
-        setCurrentPhase("focus");
-        setPhaseLeft(selectedPreset.focus);
-        setBreakSkipped(false);
-        setIsRunning(true);
-    };
-
-    const phaseLabel = useMemo(() => {
-        return currentPhase === "focus" ? "time to focus!" : "break time";
-    }, [currentPhase]);
-
-    const startBtnLabel = breakSkipped ? "continue break" : isRunning ? "pause" : "start";
-    const startBtnClass = `pomodoro-start-button${isRunning ? " is-running" : ""}${breakSkipped ? " is-break-skipped" : ""}`;
 
     return (
         <>
@@ -148,7 +62,7 @@ export const PomodoroZone = () => {
 
                         {isMenuOpen && (
                             <div className="pomodoro-dropdown">
-                                {TIMER.map((preset) => (
+                                {TIMER_PRESETS_LIST.map((preset) => (
                                     <button
                                         key={preset.id}
                                         className="pomodoro-dropdown-item"
@@ -165,20 +79,20 @@ export const PomodoroZone = () => {
                 <div className="pomodoro-timer-block">
                     <h2
                         className="pomodoro-time"
-                        data-phase={currentPhase}
+                        data-phase={p.currentPhase}
                     >
-                        {formatTotal(focusLeft)}
+                        {formatTotal(p.focusLeft)}
                     </h2>
                     <p className="pomodoro-phase">{phaseLabel}</p>
 
                     <button
                         className={startBtnClass}
-                        onClick={breakSkipped ? handleContinueBreak : handleStartPause}
+                        onClick={p.breakSkipped ? handleContinueBreak : handleStartPause}
                     >
                         {startBtnLabel}
                     </button>
 
-                    {breakSkipped && (
+                    {p.breakSkipped && (
                         <button
                             className="pomodoro-restore-btn"
                             onClick={handleRestorePomodoro}
@@ -208,10 +122,10 @@ export const PomodoroZone = () => {
                 </div>
             </div>
 
-            {showBreakModal && (
+            {p.showBreakModal && (
                 <BreakModal
-                    timeLeft={phaseLeft}
-                    presetBreak={selectedPreset.break}
+                    timeLeft={p.phaseLeft}
+                    presetBreak={p.selectedPreset.break}
                     onSkip={handleSkipBreak}
                     onBreakEnd={handleBreakEnd}
                 />
