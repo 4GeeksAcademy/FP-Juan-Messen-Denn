@@ -10,6 +10,7 @@ import { Demo } from "./pages/Demo";
 import { WelcomePage } from "./pages/WelcomePage";
 import { PublicLayout } from "./pages/PublicLayout";
 import { ResetPassword } from "./pages/ResetPassword";
+import { Goals } from "./components/goals/Goals";
 import FoldersPage from "./components/pages-y-folder/FoldersPage";
 import { SoundList } from "./pages/API-externa/Freesound";
 
@@ -28,6 +29,7 @@ export const router = createBrowserRouter(
         <Route path="/single/:theId" element={<Single />} />
         <Route path="/demo" element={<Demo />} />
         <Route path="/folders" element={<FoldersPage />} />
+        <Route path="/goals" element={<Goals />} />
         <Route path="/music" element={<SoundList />} />
       </Route>
     </>

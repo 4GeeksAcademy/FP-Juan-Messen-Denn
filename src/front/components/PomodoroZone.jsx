@@ -1,5 +1,7 @@
 import "../styles/pomodoroZone.css";
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 const TIMER = [
     { id: 1, label: "20/5 - 1 hour", focus: 20 * 60, break: 5 * 60, cycles: 3 },
@@ -31,6 +33,10 @@ export const PomodoroZone = () => {
     const [showBreakModal, setShowBreakModal] = useState(false);
     const [currentBreakMessage, setCurrentBreakMessage] = useState(BREAK_MESSAGES[0]);
 
+    const { store, dispatch } = useGlobalReducer();
+    const { currentPlaylist, currentTrackIndex, isPlaying } = store;
+    const navigate = useNavigate();
+
     useEffect(() => {
         setTimeLeft(selectedPreset.focus);
         setIsRunning(false);
@@ -41,21 +47,17 @@ export const PomodoroZone = () => {
 
     useEffect(() => {
         if (!isRunning) return;
-
         const interval = setInterval(() => {
             setTimeLeft((prev) => (prev > 1 ? prev - 1 : 0));
         }, 1000);
-
         return () => clearInterval(interval);
     }, [isRunning]);
 
     useEffect(() => {
         if (timeLeft !== 0) return;
-
         if (currentPhase === "focus") {
             const nextCompleted = completedFocusSessions + 1;
             setCompletedFocusSessions(nextCompleted);
-
             if (nextCompleted < selectedPreset.cycles) {
                 setCurrentPhase("break");
                 setTimeLeft(selectedPreset.break);
@@ -78,8 +80,20 @@ export const PomodoroZone = () => {
         setIsMenuOpen(false);
     };
 
-    const handleStartPause = () => {
-        setIsRunning(!isRunning);
+    const handleStartPause = () => setIsRunning(!isRunning);
+
+    const handlePreviousTrack = () => {
+        if (!currentPlaylist || currentTrackIndex <= 0) return;
+        dispatch({ type: "set_track_index", payload: currentTrackIndex - 1 });
+    };
+
+    const handleTogglePlay = () => {
+        dispatch({ type: "set_playing", payload: !isPlaying });
+    };
+
+    const handleNextTrack = () => {
+        if (!currentPlaylist || currentTrackIndex >= currentPlaylist.sounds.length - 1) return;
+        dispatch({ type: "set_track_index", payload: currentTrackIndex + 1 });
     };
 
     const phaseLabel = useMemo(() => {
@@ -129,20 +143,32 @@ export const PomodoroZone = () => {
                     </div>
 
                     <div className="pomodoro-controls">
-                        <button className="pomodoro-control-btn">
+                        <button
+                            className="pomodoro-control-btn"
+                            onClick={handlePreviousTrack}
+                            disabled={!currentPlaylist || currentTrackIndex <= 0}
+                        >
                             regresar
                         </button>
-                        <button className="pomodoro-control-btn is-main">
-                            pausar
+                        <button
+                            className="pomodoro-control-btn is-main"
+                            onClick={handleTogglePlay}
+                            disabled={!currentPlaylist}
+                        >
+                            {isPlaying ? "pausar" : "continuar"}
                         </button>
-                        <button className="pomodoro-control-btn">
+                        <button
+                            className="pomodoro-control-btn"
+                            onClick={handleNextTrack}
+                            disabled={!currentPlaylist || currentTrackIndex >= (currentPlaylist?.sounds.length - 1)}
+                        >
                             skip
                         </button>
                     </div>
 
                     <button
                         className="pomodoro-music-button"
-                        onClick={() => window.location.href = "/music-library"}
+                        onClick={() => navigate("/music")}
                     >
                         elegir música
                     </button>
