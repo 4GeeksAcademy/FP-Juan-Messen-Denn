@@ -1,7 +1,7 @@
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export const getFolders = async () => {
-  const response = await fetch(`${backend_url}/folders/`, {
+  const response = await fetch(`${backend_url}/api/folders/`, {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
   });
   if (!response.ok) return false;
@@ -9,7 +9,7 @@ export const getFolders = async () => {
 };
 
 export const createFolder = async (title) => {
-  const response = await fetch(`${backend_url}/folders/`, {
+  const response = await fetch(`${backend_url}/api/folders/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -22,7 +22,7 @@ export const createFolder = async (title) => {
 };
 
 export const updateFolder = async (id, title) => {
-  const response = await fetch(`${backend_url}/folders/${id}`, {
+  const response = await fetch(`${backend_url}/api/folders/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -35,7 +35,7 @@ export const updateFolder = async (id, title) => {
 };
 
 export const deleteFolder = async (id) => {
-  const response = await fetch(`${backend_url}/folders/${id}`, {
+  const response = await fetch(`${backend_url}/api/folders/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
   });
