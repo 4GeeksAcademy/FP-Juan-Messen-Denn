@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getFolders, createFolder } from "./pages-y-folder/FolderServices";
-import { getPages, createPage, updatePage } from "./pages-y-folder/PageServices";
+import { getPages, createPage } from "./pages-y-folder/PageServices";
 import "../styles/pagesZone.css";
 
 export const PagesZone = () => {
@@ -17,7 +17,6 @@ export const PagesZone = () => {
     const [error, setError] = useState("");
     const [showDropdown, setShowDropdown] = useState(false);
     const [editingPageId, setEditingPageId] = useState(null);
-
     const [loadFolderId, setLoadFolderId] = useState("");
     const [loadPages, setLoadPages] = useState([]);
     const [loadingPages, setLoadingPages] = useState(false);
@@ -66,33 +65,21 @@ export const PagesZone = () => {
     }, [loadFolderId]);
 
     const handleSave = async () => {
+        if (!selectedFolder) return;
         if (!title.trim()) {
             setError("El título no puede estar vacío.");
             return;
         }
-
-        if (editingPageId) {
-            const data = await updatePage(editingPageId, title.trim(), content.trim());
-            if (data) {
-                setSaved(true);
-                setTitle("");
-                setContent("");
-                setEditingPageId(null);
-                setError("");
-                setTimeout(() => setSaved(false), 3000);
-            }
-        } else {
-            if (!selectedFolder) return;
-            const data = await createPage(parseInt(selectedFolder), title.trim(), content.trim());
-            if (data) {
-                setSaved(true);
-                setShowSaveModal(false);
-                setTitle("");
-                setContent("");
-                setSelectedFolder("");
-                setError("");
-                setTimeout(() => setSaved(false), 3000);
-            }
+        const data = await createPage(parseInt(selectedFolder), title.trim(), content.trim());
+        if (data) {
+            setSaved(true);
+            setShowSaveModal(false);
+            setTitle("");
+            setContent("");
+            setSelectedFolder("");
+            setEditingPageId(null);
+            setError("");
+            setTimeout(() => setSaved(false), 3000);
         }
     };
 
@@ -102,11 +89,7 @@ export const PagesZone = () => {
             return;
         }
         setError("");
-        if (editingPageId) {
-            handleSave();
-        } else {
-            setShowSaveModal(true);
-        }
+        setShowSaveModal(true);
     };
 
     const handleCreateFolder = async () => {
@@ -128,26 +111,25 @@ export const PagesZone = () => {
         setLoadPages([]);
     };
 
-    const handleCancelEdit = () => {
-        setTitle("");
-        setContent("");
-        setEditingPageId(null);
-        setError("");
+    const handleCancelLoad = () => {
+        setShowLoadModal(false);
+        setLoadFolderId("");
+        setLoadPages([]);
     };
 
     return (
         <div className="pz-container">
             <div className="pz-header">
                 <h2 className="pz-title">
-                    {editingPageId ? "Editando página" : "Notas"}
+                    {editingPageId ? "Editando página" : "comienza a escribir..."}
                 </h2>
                 <div className="pz-header-right">
-                    {saved && <span className="pz-saved-badge">✓ Guardado</span>}
-                    {editingPageId && (
-                        <button className="pz-btn-cancel-edit" onClick={handleCancelEdit}>
-                            ✕ Cancelar edición
-                        </button>
-                    )}
+                    {saved && <span className="pz-saved-badge">✓ guardado</span>}
+
+                    <button className="pz-save-inline-btn" onClick={handleOpenSaveModal}>
+                        guardar
+                    </button>
+
                     <div className="pz-dropdown-wrapper" ref={dropdownRef}>
                         <button
                             className="pz-dropdown-btn"
@@ -158,41 +140,44 @@ export const PagesZone = () => {
                                 <button
                                     className="pz-dropdown-item"
                                     onClick={() => { setShowDropdown(false); setShowCreateFolderModal(true); }}
-                                >Nueva carpeta</button>
+                                >
+                                    Nueva carpeta
+                                </button>
                                 <button
                                     className="pz-dropdown-item"
                                     onClick={() => { setShowDropdown(false); setShowLoadModal(true); }}
-                                >Cargar página</button>
+                                >
+                                    Cargar página
+                                </button>
                                 <button
                                     className="pz-dropdown-item"
                                     onClick={() => { setShowDropdown(false); navigate("/folders"); }}
-                                >Ir a archivos</button>
+                                >
+                                    Ir a archivos
+                                </button>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
-        </div>
 
-        <input
-            className="pz-input-title"
-            placeholder="Título..."
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-        />
+            <input
+                className="pz-input-title"
+                placeholder="Título..."
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+            />
 
-        <textarea
-            className="pz-textarea"
-            placeholder="Escribe tus notas aquí mientras trabajas..."
-            value={content}
-            onChange={e => setContent(e.target.value)}
-        />
+            <textarea
+                className="pz-textarea"
+                placeholder="Escribe tus notas aquí mientras trabajas..."
+                value={content}
+                onChange={e => setContent(e.target.value)}
+            />
 
-            <button className="pz-save-btn" onClick={handleOpenSaveModal}>
-                {editingPageId ? "Guardar cambios" : "Guardar en carpeta"}
-            </button>
+            {error && <p className="pz-error">{error}</p>}
 
-            {/* MODAL GUARDAR EN CARPETA */}
+            {/* MODAL GUARDAR */}
             {showSaveModal && (
                 <div className="pz-overlay" onClick={() => setShowSaveModal(false)}>
                     <div className="pz-modal" onClick={e => e.stopPropagation()}>
@@ -217,12 +202,11 @@ export const PagesZone = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-        )}
+            )}
 
             {/* MODAL CARGAR PÁGINA */}
             {showLoadModal && (
-                <div className="pz-overlay" onClick={() => { setShowLoadModal(false); setLoadFolderId(""); setLoadPages([]); }}>
+                <div className="pz-overlay" onClick={handleCancelLoad}>
                     <div className="pz-modal" onClick={e => e.stopPropagation()}>
                         <div className="pz-modal-title">Cargar página</div>
                         {folders.length === 0 ? (
@@ -267,7 +251,7 @@ export const PagesZone = () => {
                             </>
                         )}
                         <div className="pz-modal-actions" style={{ marginTop: "16px" }}>
-                            <button className="pz-btn-cancel" onClick={() => { setShowLoadModal(false); setLoadFolderId(""); setLoadPages([]); }}>Cancelar</button>
+                            <button className="pz-btn-cancel" onClick={handleCancelLoad}>Cancelar</button>
                         </div>
                     </div>
                 </div>
@@ -292,7 +276,7 @@ export const PagesZone = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-        )}
-    </div>
-)};
+            )}
+        </div>
+    );
+};
