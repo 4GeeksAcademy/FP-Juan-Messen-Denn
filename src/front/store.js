@@ -155,7 +155,6 @@ export default function storeReducer(store, action = {}) {
             throw Error("Unknown action: " + action.type);
     }
 }
-
 // export const initialStore = () => {
 //     return {
 //         message: null,

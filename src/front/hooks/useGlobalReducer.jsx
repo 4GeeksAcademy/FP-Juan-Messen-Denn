@@ -1,4 +1,4 @@
-import { useContext, useReducer, createContext, useEffect } from "react";
+import { useContext, useReducer, createContext, useEffect, useRef } from "react";
 import storeReducer, { initialStore } from "../store";
 
 const StoreContext = createContext();
@@ -24,7 +24,7 @@ const getInitialStore = () => {
     const base = initialStore();
     const savedPomodoro = loadPomodoro();
     if (savedPomodoro) {
-        return { ...base, pomodoro: savedPomodoro };
+        return { ...base, pomodoro: { ...savedPomodoro, isRunning: false } };
     }
     return base;
 };
@@ -39,6 +39,24 @@ const persistingReducer = (store, action) => {
 
 export function StoreProvider({ children }) {
     const [store, dispatch] = useReducer(persistingReducer, getInitialStore());
+    const phaseLeftRef = useRef(store.pomodoro.phaseLeft);
+    const storeRef = useRef(store);
+
+    useEffect(() => {
+        storeRef.current = store;
+        phaseLeftRef.current = store.pomodoro.phaseLeft;
+    }, [store]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!storeRef.current.pomodoro.isRunning) return;
+            dispatch({ type: "pomodoro_tick" });
+            if (phaseLeftRef.current <= 1) {
+                dispatch({ type: "pomodoro_phase_end" });
+            }
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <StoreContext.Provider value={{ store, dispatch }}>
@@ -51,8 +69,6 @@ export default function useGlobalReducer() {
     const { dispatch, store } = useContext(StoreContext);
     return { dispatch, store };
 }
-
-
 
 // // Import necessary hooks and functions from React.
 // import { useContext, useReducer, createContext } from "react";

@@ -1,3 +1,4 @@
+
 import "../styles/pomodoroZone.css";
 import { useMemo, useRef, useEffect, useState } from "react";
 import { BreakModal } from "./BreakModal";
@@ -13,6 +14,8 @@ const formatTotal = (s) => {
     }
     return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
 };
+
+const hasHours = (s) => s >= 3600;
 
 export const PomodoroZone = () => {
     const { store, dispatch } = useGlobalReducer();
@@ -80,6 +83,7 @@ export const PomodoroZone = () => {
                     <h2
                         className="pomodoro-time"
                         data-phase={p.currentPhase}
+                        data-format={hasHours(p.focusLeft) ? "hms" : "ms"}
                     >
                         {formatTotal(p.focusLeft)}
                     </h2>
