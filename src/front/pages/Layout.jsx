@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+
+import { useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom/dist";
 import ScrollToTop from "../components/ScrollToTop";
 import { Navbar } from "../components/Navbar";
@@ -7,8 +8,9 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import { getProfile } from "../services/loginBS";
 
 export const Layout = () => {
-    const { dispatch } = useGlobalReducer();
+    const { store, dispatch } = useGlobalReducer();
     const isMobile = window.innerWidth <= 767;
+    const phaseLeftRef = useRef(store.pomodoro.phaseLeft);
 
     useEffect(() => {
         const loadUser = async () => {
@@ -23,6 +25,21 @@ export const Layout = () => {
             }
         };
         loadUser();
+    }, []);
+
+    useEffect(() => {
+        phaseLeftRef.current = store.pomodoro.phaseLeft;
+    }, [store.pomodoro.phaseLeft]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            dispatch({ type: "pomodoro_tick" });
+
+            if (phaseLeftRef.current <= 1) {
+                dispatch({ type: "pomodoro_phase_end" });
+            }
+        }, 1000);
+        return () => clearInterval(interval);
     }, []);
 
     return (
