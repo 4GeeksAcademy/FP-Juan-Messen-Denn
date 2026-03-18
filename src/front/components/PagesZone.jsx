@@ -20,6 +20,7 @@ export const PagesZone = () => {
     const [loadFolderId, setLoadFolderId] = useState("");
     const [loadPages, setLoadPages] = useState([]);
     const [loadingPages, setLoadingPages] = useState(false);
+    const [inlineFolderTitle, setInlineFolderTitle] = useState("");
 
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
@@ -89,7 +90,20 @@ export const PagesZone = () => {
             return;
         }
         setError("");
+        setInlineFolderTitle("");
         setShowSaveModal(true);
+    };
+
+    // Crear carpeta desde dentro del modal de guardar
+    const handleInlineCreateFolder = async () => {
+        if (!inlineFolderTitle.trim()) return;
+        const data = await createFolder(inlineFolderTitle.trim());
+        if (data) {
+            const updatedFolders = [...folders, data];
+            setFolders(updatedFolders);
+            setSelectedFolder(String(data.id));
+            setInlineFolderTitle("");
+        }
     };
 
     const handleCreateFolder = async () => {
@@ -140,21 +154,15 @@ export const PagesZone = () => {
                                 <button
                                     className="pz-dropdown-item"
                                     onClick={() => { setShowDropdown(false); setShowCreateFolderModal(true); }}
-                                >
-                                    Nueva carpeta
-                                </button>
+                                >Nueva carpeta</button>
                                 <button
                                     className="pz-dropdown-item"
                                     onClick={() => { setShowDropdown(false); setShowLoadModal(true); }}
-                                >
-                                    Cargar página
-                                </button>
+                                >Cargar página</button>
                                 <button
                                     className="pz-dropdown-item"
                                     onClick={() => { setShowDropdown(false); navigate("/folders"); }}
-                                >
-                                    Ir a archivos
-                                </button>
+                                >Ir a archivos</button>
                             </div>
                         )}
                     </div>
@@ -182,24 +190,50 @@ export const PagesZone = () => {
                 <div className="pz-overlay" onClick={() => setShowSaveModal(false)}>
                     <div className="pz-modal" onClick={e => e.stopPropagation()}>
                         <div className="pz-modal-title">¿En qué carpeta guardar?</div>
+
                         {folders.length === 0 ? (
-                            <p className="pz-modal-empty">No tienes carpetas. Crea una primero.</p>
+                            <>
+                                <p className="pz-modal-empty">No tienes carpetas. Crea una para guardar.</p>
+                                <input
+                                    className="pz-select"
+                                    placeholder="Nombre de la carpeta..."
+                                    value={inlineFolderTitle}
+                                    onChange={e => setInlineFolderTitle(e.target.value)}
+                                    onKeyDown={e => e.key === "Enter" && handleInlineCreateFolder()}
+                                    autoFocus
+                                    style={{ marginTop: "4px" }}
+                                />
+                                <div className="pz-modal-actions">
+                                    <button className="pz-btn-cancel" onClick={() => setShowSaveModal(false)}>Cancelar</button>
+                                    <button
+                                        className="pz-btn-primary"
+                                        disabled={!inlineFolderTitle.trim()}
+                                        onClick={handleInlineCreateFolder}
+                                    >Crear carpeta</button>
+                                </div>
+                            </>
                         ) : (
-                            <select
-                                className="pz-select"
-                                value={selectedFolder}
-                                onChange={e => setSelectedFolder(e.target.value)}
-                            >
-                                <option value="">-- Selecciona una carpeta --</option>
-                                {folders.map(f => (
-                                    <option key={f.id} value={f.id}>{f.title}</option>
-                                ))}
-                            </select>
+                            <>
+                                <select
+                                    className="pz-select"
+                                    value={selectedFolder}
+                                    onChange={e => setSelectedFolder(e.target.value)}
+                                >
+                                    <option value="">-- Selecciona una carpeta --</option>
+                                    {folders.map(f => (
+                                        <option key={f.id} value={f.id}>{f.title}</option>
+                                    ))}
+                                </select>
+                                <div className="pz-modal-actions">
+                                    <button className="pz-btn-cancel" onClick={() => setShowSaveModal(false)}>Cancelar</button>
+                                    <button
+                                        className="pz-btn-primary"
+                                        disabled={!selectedFolder}
+                                        onClick={handleSave}
+                                    >Guardar</button>
+                                </div>
+                            </>
                         )}
-                        <div className="pz-modal-actions">
-                            <button className="pz-btn-cancel" onClick={() => setShowSaveModal(false)}>Cancelar</button>
-                            <button className="pz-btn-primary" disabled={!selectedFolder} onClick={handleSave}>Guardar</button>
-                        </div>
                     </div>
                 </div>
             )}
@@ -224,7 +258,6 @@ export const PagesZone = () => {
                                         <option key={f.id} value={f.id}>{f.title}</option>
                                     ))}
                                 </select>
-
                                 {loadFolderId && (
                                     <>
                                         <label className="pz-modal-label" style={{ marginTop: "12px" }}>Página</label>
