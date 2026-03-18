@@ -12,23 +12,23 @@ import { PublicLayout } from "./pages/PublicLayout";
 import { ResetPassword } from "./pages/ResetPassword";
 import FoldersPage from "./components/pages-y-folder/FoldersPage";
 import { SoundList } from "./pages/API-externa/Freesound";
+import { ProfilePage } from "./pages/ProfilePage";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      {/* Rutas públicas — sin Navbar */}
       <Route path="/" element={<PublicLayout />}>
         <Route index element={<WelcomePage />} />
         <Route path="reset-password" element={<ResetPassword />} />
       </Route>
 
-      {/* Rutas privadas — con Navbar y Footer */}
       <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>}>
         <Route path="/home" element={<Home />} />
         <Route path="/single/:theId" element={<Single />} />
         <Route path="/demo" element={<Demo />} />
         <Route path="/folders" element={<FoldersPage />} />
         <Route path="/music" element={<SoundList />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Route>
     </>
   )
