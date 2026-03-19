@@ -89,6 +89,14 @@ export const Navbar = () => {
     return (user.name || user.email || "U")[0].toUpperCase();
   };
 
+  const renderAvatar = () => {
+    if (!user?.avatar_url) return getInitial();
+    if (user.avatar_url.startsWith("http")) {
+      return <img src={user.avatar_url} alt="avatar" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />;
+    }
+    return <span style={{ fontSize: "1.1rem" }}>{user.avatar_url}</span>;
+  };
+
   const statusColors = {
     urgent: { bg: "rgba(230,57,70,0.15)", color: "#e63946", active: "#e63946" },
     progress: { bg: "rgba(168,218,220,0.3)", color: "#457b9d", active: "#457b9d" },
@@ -122,10 +130,7 @@ export const Navbar = () => {
                 >
                   <span className="user-name">{user?.name || "Usuario"}</span>
                   <div className="user-avatar">
-                    {user?.avatar_url
-                      ? <img src={user.avatar_url} alt="avatar" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
-                      : getInitial()
-                    }
+                    {renderAvatar()}
                   </div>
                 </button>
 
@@ -271,14 +276,14 @@ export const Navbar = () => {
           background: var(--color-surface);
           border: 1px solid var(--color-divider);
           border-radius: 999px;
-          padding: 5px 16px 5px 16px;
+          padding: 5px 16px;
           height: 42px;
           font-size: 0.9rem;
           font-weight: 500;
           color: var(--color-text-primary);
           cursor: pointer;
           transition: background 0.2s ease;
-}
+        }
         .btn-goals-center:hover {
           background: var(--color-divider);
         }
@@ -289,20 +294,16 @@ export const Navbar = () => {
           justify-content: flex-end;
         }
         .auth-buttons button { margin-left: 0.5rem; }
-
-        /* USER PILL */
-        .user-dropdown-container {
-          position: relative;
-        }
+        .user-dropdown-container { position: relative; }
         .user-pill {
           display: flex;
           align-items: center;
           gap: 8px;
-          height: 42px;
           background: var(--color-surface);
           border: 1px solid var(--color-divider);
           border-radius: 999px;
           padding: 5px 5px 5px 12px;
+          height: 42px;
           cursor: pointer;
           transition: background 0.2s ease;
         }
@@ -328,8 +329,6 @@ export const Navbar = () => {
           font-weight: 500;
           color: var(--color-text-primary);
         }
-
-        /* DROPDOWN */
         .dropdown-menu {
           position: absolute;
           right: 0;
@@ -358,8 +357,6 @@ export const Navbar = () => {
         }
         .dropdown-menu a:hover,
         .dropdown-menu button:hover { background: rgba(45,58,74,0.06); }
-
-        /* GOALS MODAL */
         .gmodal-overlay {
           position: fixed;
           inset: 0;
@@ -445,10 +442,7 @@ export const Navbar = () => {
           transition: opacity 0.2s;
         }
         .gmodal-actions button:hover { opacity: 1; }
-        .gmodal-status {
-          display: flex;
-          gap: 8px;
-        }
+        .gmodal-status { display: flex; gap: 8px; }
         .gmodal-footer {
           padding: 1rem 1.5rem;
           border-top: 1px solid rgba(0,0,0,0.06);
