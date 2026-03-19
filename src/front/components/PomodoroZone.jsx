@@ -119,7 +119,7 @@ export const PomodoroZone = () => {
 
                     <button
                         className="pomodoro-music-button"
-                        onClick={() => window.location.href = "/music-library"}
+                        onClick={() => navigate("/music")}
                     >
                         choose music
                     </button>
