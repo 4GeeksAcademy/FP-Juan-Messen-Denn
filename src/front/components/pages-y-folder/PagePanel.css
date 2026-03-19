@@ -248,3 +248,25 @@
   letter-spacing: 0.04em;
 }
 .page-create-btn-submit:hover { opacity: 0.85; }
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .page-scroll-list {
+    padding: 8px;
+  }
+
+  .page-create-form {
+    padding: 14px 16px;
+  }
+
+  .page-animated-item .item-actions {
+    opacity: 1;
+  }
+
+  .page-empty {
+    min-height: 200px;
+  }
+
+  .page-create-footer {
+    padding-top: 12px;
+  }
+}

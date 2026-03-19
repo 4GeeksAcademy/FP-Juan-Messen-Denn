@@ -7,17 +7,17 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const AVATARS = ["🐱", "🐻", "🐰", "🐥", "🐼", "😎"];
 
 const PASSWORD_RULES = [
-    { id: "length", label: "Al menos 8 caracteres",      test: (p) => p.length >= 8 },
-    { id: "number", label: "Al menos 1 número",           test: (p) => /\d/.test(p) },
-    { id: "symbol", label: "Al menos 1 símbolo (!@#$…)",  test: (p) => /[^a-zA-Z0-9]/.test(p) },
+    { id: "length", label: "At least 8 characters",      test: (p) => p.length >= 8 },
+    { id: "number", label: "At least 1 number",           test: (p) => /\d/.test(p) },
+    { id: "symbol", label: "At least 1 symbol (!@#$…)",  test: (p) => /[^a-zA-Z0-9]/.test(p) },
 ];
 
 const getStrength = (password) => {
     const passed = PASSWORD_RULES.filter(r => r.test(password)).length;
     if (passed === 0) return { level: 0, label: "",        color: "transparent" };
-    if (passed === 1) return { level: 1, label: "Débil",   color: "#E05252" };
-    if (passed === 2) return { level: 2, label: "Regular", color: "#E0A852" };
-    return               { level: 3, label: "Fuerte",  color: "#52A87C" };
+    if (passed === 1) return { level: 1, label: "Weak",   color: "#E05252" };
+    if (passed === 2) return { level: 2, label: "Fair",   color: "#E0A852" };
+    return               { level: 3, label: "Strong", color: "#52A87C" };
 };
 
 export const ProfilePage = () => {
@@ -27,6 +27,7 @@ export const ProfilePage = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+    const [pendingAvatar, setPendingAvatar] = useState(undefined); // undefined = no change
 
     const [editName, setEditName] = useState("");
     const [editEmail, setEditEmail] = useState("");
@@ -68,16 +69,16 @@ export const ProfilePage = () => {
 
     const handleSaveEdit = async () => {
         if (!editName.trim() || !editEmail.trim()) {
-            setEditError("Nombre y email son obligatorios.");
+            setEditError("Name and email are required.");
             return;
         }
         if (editPassword) {
             if (!allRulesPassed) {
-                setEditError("La contraseña no cumple los requisitos de seguridad.");
+                setEditError("Password does not meet security requirements.");
                 return;
             }
             if (editPassword !== editPasswordConfirm) {
-                setEditError("Las contraseñas no coinciden.");
+                setEditError("Passwords do not match.");
                 return;
             }
         }
@@ -96,7 +97,7 @@ export const ProfilePage = () => {
 
         if (!res.ok) {
             const err = await res.json();
-            setEditError(err.message || "Error al actualizar.");
+            setEditError(err.message || "Error updating profile.");
             return;
         }
 
@@ -106,20 +107,52 @@ export const ProfilePage = () => {
         setTimeout(() => { setShowEditModal(false); setEditSuccess(false); }, 1200);
     };
 
-    const handleSelectAvatar = async (emoji) => {
+    const handleSelectAvatar = (emoji) => {
+        setPendingAvatar(emoji || null);
+        setShowAvatarPicker(false);
+    };
+
+    const handleSaveProfile = async () => {
+        const body = {};
+        if (pendingAvatar !== undefined) body.avatar_url = pendingAvatar;
+        if (editName.trim()) body.name = editName.trim();
+        if (editEmail.trim()) body.email = editEmail.trim();
+        if (editPassword) {
+            if (!allRulesPassed) {
+                setEditError("Password does not meet security requirements.");
+                return;
+            }
+            if (editPassword !== editPasswordConfirm) {
+                setEditError("Passwords do not match.");
+                return;
+            }
+            body.password = editPassword;
+        }
+
+        if (Object.keys(body).length === 0) {
+            navigate("/home");
+            return;
+        }
+
         const res = await fetch(`${BACKEND_URL}/api/user/profile`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             },
-            body: JSON.stringify({ avatar_url: emoji || null })
+            body: JSON.stringify(body)
         });
-        if (res.ok) {
-            const data = await res.json();
-            setUser(data.user);
+
+        if (!res.ok) {
+            const err = await res.json();
+            setEditError(err.message || "Error updating profile.");
+            return;
         }
-        setShowAvatarPicker(false);
+
+        const data = await res.json();
+        setUser(data.user);
+        setPendingAvatar(undefined);
+        navigate("/home");
     };
 
     const handleDeleteAccount = async () => {
@@ -136,7 +169,7 @@ export const ProfilePage = () => {
         navigate("/");
     };
 
-    if (!user) return <div className="prof-loading">Cargando...</div>;
+    if (!user) return <div className="prof-loading">Loading...</div>;
 
     return (
         <div className="prof-page">
@@ -148,11 +181,16 @@ export const ProfilePage = () => {
                         className="prof-btn-home"
                         onClick={() => navigate("/home")}
                     >← Home</button>
+                    <button
+                        className="prof-btn-home"
+                        onClick={handleSaveProfile}
+                        style={{ margin: 0 }}
+                    >Save profile</button>
                 </div>
 
                 <div className="prof-avatar prof-avatar-clickable" onClick={() => setShowAvatarPicker(!showAvatarPicker)}>
-                    {user.avatar_url
-                        ? <span className="prof-avatar-emoji">{user.avatar_url}</span>
+                    {(pendingAvatar !== undefined ? pendingAvatar : user.avatar_url)
+                        ? <span className="prof-avatar-emoji">{pendingAvatar !== undefined ? pendingAvatar : user.avatar_url}</span>
                         : <span className="prof-avatar-placeholder">👤</span>
                     }
                     <div className="prof-avatar-overlay">✏️</div>
@@ -163,15 +201,15 @@ export const ProfilePage = () => {
                         {AVATARS.map(emoji => (
                             <button
                                 key={emoji}
-                                className={`prof-avatar-option ${user.avatar_url === emoji ? "selected" : ""}`}
+                                className={`prof-avatar-option ${(pendingAvatar !== undefined ? pendingAvatar : user.avatar_url) === emoji ? "selected" : ""}`}
                                 onClick={() => handleSelectAvatar(emoji)}
                             >{emoji}</button>
                         ))}
-                        {user.avatar_url && (
+                        {(pendingAvatar !== undefined ? pendingAvatar : user.avatar_url) && (
                             <button
                                 className="prof-avatar-option prof-avatar-remove"
                                 onClick={() => handleSelectAvatar(null)}
-                                title="Quitar avatar"
+                                title="Remove avatar"
                             >✕</button>
                         )}
                     </div>
@@ -180,33 +218,33 @@ export const ProfilePage = () => {
                 <h2 className="prof-name">{user.name}</h2>
                 <p className="prof-email">{user.email}</p>
 
-                <button className="prof-btn-edit" onClick={handleOpenEdit}>editar perfil</button>
+                <button className="prof-btn-edit" onClick={handleOpenEdit}>edit profile</button>
                 <button className="prof-btn-logout" onClick={() => setShowLogoutModal(true)}>logout</button>
-                <button className="prof-btn-delete" onClick={() => setShowDeleteModal(true)}>eliminar cuenta</button>
+                <button className="prof-btn-delete" onClick={() => setShowDeleteModal(true)}>delete account</button>
             </div>
 
             {showEditModal && (
                 <div className="prof-overlay" onClick={() => setShowEditModal(false)}>
                     <div className="prof-modal" onClick={e => e.stopPropagation()}>
                         <div className="prof-modal-header">
-                            <span className="prof-modal-title">Editar perfil</span>
+                            <span className="prof-modal-title">Edit profile</span>
                             <button className="prof-modal-close" onClick={() => setShowEditModal(false)}>✕</button>
                         </div>
                         <div className="prof-modal-body">
-                            <label className="prof-label">Nombre</label>
-                            <input className="prof-input" value={editName} onChange={e => setEditName(e.target.value)} placeholder="Tu nombre..." />
+                            <label className="prof-label">Name</label>
+                            <input className="prof-input" value={editName} onChange={e => setEditName(e.target.value)} placeholder="Your name..." />
 
                             <label className="prof-label">Email</label>
                             <input className="prof-input" type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="Tu email..." />
 
-                            <label className="prof-label">Nueva contraseña <span className="prof-label-optional">(opcional)</span></label>
+                            <label className="prof-label">New password <span className="prof-label-optional">(optional)</span></label>
                             <div className="prof-input-wrapper">
                                 <input
                                     className="prof-input"
                                     type={showPassword ? "text" : "password"}
                                     value={editPassword}
                                     onChange={e => { setPasswordTouched(true); setEditPassword(e.target.value); }}
-                                    placeholder="Mínimo 8 caracteres..."
+                                    placeholder="Minimum 8 characters..."
                                 />
                                 <button type="button" className="prof-toggle-password" onClick={() => setShowPassword(!showPassword)}>
                                     {showPassword ? "●" : "○"}
@@ -232,14 +270,14 @@ export const ProfilePage = () => {
                                 </div>
                             )}
 
-                            <label className="prof-label">Confirmar contraseña</label>
+                            <label className="prof-label">Confirm password</label>
                             <div className="prof-input-wrapper">
                                 <input
                                     className="prof-input"
                                     type={showPasswordConfirm ? "text" : "password"}
                                     value={editPasswordConfirm}
                                     onChange={e => setEditPasswordConfirm(e.target.value)}
-                                    placeholder="Repite la contraseña..."
+                                    placeholder="Repeat your password..."
                                 />
                                 <button type="button" className="prof-toggle-password" onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}>
                                     {showPasswordConfirm ? "●" : "○"}
@@ -247,7 +285,7 @@ export const ProfilePage = () => {
                             </div>
 
                             {editError && <p className="prof-error">{editError}</p>}
-                            {editSuccess && <p className="prof-success">✓ Guardado correctamente</p>}
+                            {editSuccess && <p className="prof-success">✓ Saved successfully</p>}
                         </div>
                         <div className="prof-modal-actions">
                             <button className="prof-btn-cancel" onClick={() => setShowEditModal(false)}>Cancelar</button>
@@ -260,11 +298,11 @@ export const ProfilePage = () => {
             {showLogoutModal && (
                 <div className="prof-overlay" onClick={() => setShowLogoutModal(false)}>
                     <div className="prof-modal prof-modal-confirm" onClick={e => e.stopPropagation()}>
-                        <div className="prof-modal-title">¿Cerrar sesión?</div>
-                        <p className="prof-confirm-text">Se cerrará tu sesión actual.</p>
+                        <div className="prof-modal-title">Sign out?</div>
+                        <p className="prof-confirm-text">Your current session will be closed.</p>
                         <div className="prof-modal-actions">
-                            <button className="prof-btn-cancel" onClick={() => setShowLogoutModal(false)}>Cancelar</button>
-                            <button className="prof-btn-primary" onClick={handleLogout}>Sí, salir</button>
+                            <button className="prof-btn-cancel" onClick={() => setShowLogoutModal(false)}>Cancel</button>
+                            <button className="prof-btn-primary" onClick={handleLogout}>Yes, sign out</button>
                         </div>
                     </div>
                 </div>
@@ -274,11 +312,11 @@ export const ProfilePage = () => {
                 <div className="prof-overlay" onClick={() => setShowDeleteModal(false)}>
                     <div className="prof-modal prof-modal-confirm" onClick={e => e.stopPropagation()}>
                         <div className="prof-modal-icon">🗑️</div>
-                        <div className="prof-modal-title">¿Eliminar cuenta?</div>
-                        <p className="prof-confirm-text">Esta acción es permanente y no se puede deshacer.</p>
+                        <div className="prof-modal-title">Delete account?</div>
+                        <p className="prof-confirm-text">This action is permanent and cannot be undone.</p>
                         <div className="prof-modal-actions">
-                            <button className="prof-btn-cancel" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
-                            <button className="prof-btn-danger" onClick={handleDeleteAccount}>Sí, eliminar</button>
+                            <button className="prof-btn-cancel" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+                            <button className="prof-btn-danger" onClick={handleDeleteAccount}>Yes, delete</button>
                         </div>
                     </div>
                 </div>

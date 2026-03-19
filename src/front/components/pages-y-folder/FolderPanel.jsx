@@ -91,7 +91,7 @@ const FolderPanel = ({
       >
         {folders.length === 0 && (
           <div style={{ textAlign: 'center', color: '#6B7280', fontSize: '13px', padding: '20px 0' }}>
-            No tienes carpetas aún
+            No folders yet
           </div>
         )}
         {folders.map((folder, index) => (

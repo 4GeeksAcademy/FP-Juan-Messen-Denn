@@ -104,3 +104,15 @@
 .folder-rename-btn.confirm:hover { background: rgba(45,58,74,0.15); }
 .folder-rename-btn.cancel { background: rgba(220,38,38,0.08); color: #dc2626; }
 .folder-rename-btn.cancel:hover { background: rgba(220,38,38,0.15); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .folder-scroll-list {
+    padding: 8px;
+    max-height: 250px;
+  }
+
+  .folder-animated-item {
+    padding: 8px 10px;
+  }
+}

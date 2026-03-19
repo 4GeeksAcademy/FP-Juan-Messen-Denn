@@ -98,8 +98,8 @@ const FoldersPage = () => {
     };
 
     const confirmLabel = selectedFolders.length === 1
-        ? `la carpeta "${folders.find(f => f.id === selectedFolders[0])?.title}"`
-        : `estas ${selectedFolders.length} carpetas`;
+        ? `the folder "${folders.find(f => f.id === selectedFolders[0])?.title}"`
+        : `these ${selectedFolders.length} folders`;
 
     return (
         <>
@@ -115,7 +115,7 @@ const FoldersPage = () => {
                                     onClick={() => navigate("/home")}
                                     style={{ padding: '6px 12px', fontSize: '12px' }}
                                 >← Home</button>
-                                <span className="fp-sidebar-title">Carpetas</span>
+                                <span className="fp-sidebar-title">Folders</span>
                             </div>
                             <div className="fp-sidebar-btns">
                                 <button
@@ -152,11 +152,11 @@ const FoldersPage = () => {
                                     disabled={selectedFolders.length === 0}
                                     onClick={() => setConfirmModal({ type: "folders" })}
                                 >
-                                    Eliminar {selectedFolders.length > 0 ? `(${selectedFolders.length})` : "seleccionados"}
+                                    Delete {selectedFolders.length > 0 ? `(${selectedFolders.length})` : "selected"}
                                 </button>
                             )}
                             <button className="fp-new-folder-btn w-100" onClick={() => setShowFolderModal(true)}>
-                                + Nueva carpeta
+                                + New folder
                             </button>
                         </div>
                     </div>
@@ -170,14 +170,14 @@ const FoldersPage = () => {
                                     className="fp-btn-cancel d-md-none"
                                     onClick={() => setShowMobileMain(false)}
                                     style={{ padding: '6px 12px', fontSize: '12px' }}
-                                >← Carpetas</button>
+                                >← Folders</button>
                                 <span className="fp-main-title">
-                                    {activeFolder ? activeFolder.title : "Selecciona una carpeta"}
+                                    {activeFolder ? activeFolder.title : "Select a folder"}
                                 </span>
                             </div>
                             {activeFolder && !showCreateForm && (
                                 <button className="fp-new-page-btn" onClick={() => setShowCreateForm(true)}>
-                                    + Nueva página
+                                    + New page
                                 </button>
                             )}
                         </div>
@@ -218,12 +218,12 @@ const FoldersPage = () => {
             {showFolderModal && (
                 <div className="fp-overlay" onClick={() => setShowFolderModal(false)}>
                     <div className="fp-modal" onClick={e => e.stopPropagation()}>
-                        <div className="fp-modal-title">Nueva carpeta</div>
+                        <div className="fp-modal-title">New folder</div>
                         <div className="fp-input-group">
-                            <label className="fp-label">Nombre</label>
+                            <label className="fp-label">Name</label>
                             <input
                                 className="fp-input"
-                                placeholder="Nombre de la carpeta..."
+                                placeholder="Folder name..."
                                 value={newFolderTitle}
                                 onChange={e => setNewFolderTitle(e.target.value)}
                                 onKeyDown={e => e.key === "Enter" && handleCreateFolder()}
@@ -231,8 +231,8 @@ const FoldersPage = () => {
                             />
                         </div>
                         <div className="fp-modal-actions">
-                            <button className="fp-btn-cancel" onClick={() => setShowFolderModal(false)}>Cancelar</button>
-                            <button className="fp-btn-primary" onClick={handleCreateFolder}>Crear</button>
+                            <button className="fp-btn-cancel" onClick={() => setShowFolderModal(false)}>Cancel</button>
+                            <button className="fp-btn-primary" onClick={handleCreateFolder}>Create</button>
                         </div>
                     </div>
                 </div>
@@ -242,22 +242,22 @@ const FoldersPage = () => {
             {moveModal && (
                 <div className="fp-overlay" onClick={() => setMoveModal(null)}>
                     <div className="fp-modal" onClick={e => e.stopPropagation()}>
-                        <div className="fp-modal-title">Cambiar de carpeta</div>
+                        <div className="fp-modal-title">Move to folder</div>
                         <div className="fp-input-group">
-                            <label className="fp-label">Carpeta destino</label>
+                            <label className="fp-label">Destination folder</label>
                             <select
                                 className="fp-select"
                                 value={moveTarget}
                                 onChange={e => setMoveTarget(e.target.value)}
                             >
-                                <option value="">-- Selecciona --</option>
+                                <option value="">-- Select --</option>
                                 {folders.filter(f => f.id !== moveModal.folder.id).map(f => (
                                     <option key={f.id} value={f.id}>{f.title}</option>
                                 ))}
                             </select>
                         </div>
                         <div className="fp-modal-actions">
-                            <button className="fp-btn-cancel" onClick={() => setMoveModal(null)}>Cancelar</button>
+                            <button className="fp-btn-cancel" onClick={() => setMoveModal(null)}>Cancel</button>
                             <button className="fp-btn-primary" disabled={!moveTarget} onClick={() => {
                                 const targetFolder = folders.find(f => f.id === parseInt(moveTarget));
                                 setPages(prev => prev.map(p => p.id === moveModal.id
@@ -266,7 +266,7 @@ const FoldersPage = () => {
                                 ));
                                 setMoveModal(null);
                                 setMoveTarget("");
-                            }}>Mover</button>
+                            }}>Move</button>
                         </div>
                     </div>
                 </div>
@@ -277,22 +277,22 @@ const FoldersPage = () => {
                 <div className="fp-overlay" onClick={() => setConfirmModal(null)}>
                     <div className="fp-modal confirm" onClick={e => e.stopPropagation()}>
                         <div className="fp-modal-icon">🗑️</div>
-                        <div className="fp-modal-title">¿Estás seguro?</div>
+                        <div className="fp-modal-title">Are you sure?</div>
                         <p>
-                            Vas a eliminar {confirmModal.type === "page"
-                                ? `la página "${confirmModal.title}"`
+                            You are about to delete {confirmModal.type === "page"
+                                ? `the page "${confirmModal.title}"`
                                 : confirmLabel
-                            }.<br />Esta acción no se puede deshacer.
+                            }.<br />This action cannot be undone.
                         </p>
                         <div className="fp-modal-actions">
-                            <button className="fp-btn-cancel" onClick={() => setConfirmModal(null)}>Cancelar</button>
+                            <button className="fp-btn-cancel" onClick={() => setConfirmModal(null)}>Cancel</button>
                             <button
                                 className="fp-btn-danger"
                                 onClick={confirmModal.type === "page"
                                     ? () => handleDeletePage({ id: confirmModal.id, title: confirmModal.title })
                                     : handleDeleteFolders
                                 }
-                            >Sí, eliminar</button>
+                            >Yes, delete</button>
                         </div>
                     </div>
                 </div>
