@@ -1,9 +1,9 @@
-
 import "../styles/pomodoroZone.css";
 import { useMemo, useRef, useEffect, useState } from "react";
 import { BreakModal } from "./BreakModal";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { TIMER_PRESETS_LIST } from "../store";
+import { useNavigate } from "react-router-dom";
 
 const formatTotal = (s) => {
     const h = Math.floor(s / 3600);
@@ -20,8 +20,10 @@ const hasHours = (s) => s >= 3600;
 export const PomodoroZone = () => {
     const { store, dispatch } = useGlobalReducer();
     const p = store.pomodoro;
+    const { currentPlaylist, currentTrackIndex, isPlaying } = store;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!isMenuOpen) return;
@@ -43,12 +45,26 @@ export const PomodoroZone = () => {
 
     const handleStartPause = () => dispatch({ type: "pomodoro_start_pause" });
     const handleContinueBreak = () => dispatch({ type: "pomodoro_continue_break" });
-    const handleSkipBreak = (remainingBreakTime) => dispatch({ type: "pomodoro_skip_break" });
+    const handleSkipBreak = () => dispatch({ type: "pomodoro_skip_break" });
     const handleBreakEnd = () => dispatch({ type: "pomodoro_break_end" });
     const handleRestorePomodoro = () => dispatch({ type: "pomodoro_restore" });
     const handlePresetSelect = (preset) => {
         dispatch({ type: "pomodoro_set_preset", payload: preset });
         setIsMenuOpen(false);
+    };
+
+    const handlePreviousTrack = () => {
+        if (!currentPlaylist || currentTrackIndex <= 0) return;
+        dispatch({ type: "set_track_index", payload: currentTrackIndex - 1 });
+    };
+
+    const handleTogglePlay = () => {
+        dispatch({ type: "set_playing", payload: !isPlaying });
+    };
+
+    const handleNextTrack = () => {
+        if (!currentPlaylist || currentTrackIndex >= currentPlaylist.sounds.length - 1) return;
+        dispatch({ type: "set_track_index", payload: currentTrackIndex + 1 });
     };
 
     return (
@@ -112,9 +128,27 @@ export const PomodoroZone = () => {
                     </div>
 
                     <div className="pomodoro-controls">
-                        <button className="pomodoro-control-btn">back</button>
-                        <button className="pomodoro-control-btn is-main">pause</button>
-                        <button className="pomodoro-control-btn">skip</button>
+                        <button
+                            className="pomodoro-control-btn"
+                            onClick={handlePreviousTrack}
+                            disabled={!currentPlaylist || currentTrackIndex <= 0}
+                        >
+                            back
+                        </button>
+                        <button
+                            className="pomodoro-control-btn is-main"
+                            onClick={handleTogglePlay}
+                            disabled={!currentPlaylist}
+                        >
+                            {isPlaying ? "pause" : "play"}
+                        </button>
+                        <button
+                            className="pomodoro-control-btn"
+                            onClick={handleNextTrack}
+                            disabled={!currentPlaylist || currentTrackIndex >= (currentPlaylist?.sounds.length - 1)}
+                        >
+                            skip
+                        </button>
                     </div>
 
                     <button

@@ -25,6 +25,9 @@ export const initialStore = () => {
         message: null,
         currentUser: null,
         pomodoro: buildPomodoroState(TIMER_PRESETS[1]),
+        currentPlaylist: null,
+        currentTrackIndex: 0,
+        isPlaying: false,
     };
 };
 
@@ -39,15 +42,27 @@ export default function storeReducer(store, action = {}) {
         case "logout":
             return { ...store, currentUser: null };
 
+        case "set_playlist":
+            return {
+                ...store,
+                currentPlaylist: action.payload,
+                currentTrackIndex: 0,
+                isPlaying: true,
+            };
+
+        case "set_track_index":
+            return { ...store, currentTrackIndex: action.payload };
+
+        case "set_playing":
+            return { ...store, isPlaying: action.payload };
+
         case "pomodoro_tick": {
             const p = store.pomodoro;
             if (!p.isRunning) return store;
-
             const newPhaseLeft = p.phaseLeft > 1 ? p.phaseLeft - 1 : 0;
             const newFocusLeft = p.currentPhase === "focus" && p.focusLeft > 1
                 ? p.focusLeft - 1
                 : p.focusLeft;
-
             return {
                 ...store,
                 pomodoro: { ...p, phaseLeft: newPhaseLeft, focusLeft: newFocusLeft },
@@ -155,25 +170,3 @@ export default function storeReducer(store, action = {}) {
             throw Error("Unknown action: " + action.type);
     }
 }
-// export const initialStore = () => {
-//     return {
-//         message: null,
-//         currentUser: null,
-//     };
-// };
-
-// export default function storeReducer(store, action = {}) {
-//     switch (action.type) {
-//         case "set_hello":
-//             return { ...store, message: action.payload };
-
-//         case "set_user":
-//             return { ...store, currentUser: action.payload };
-
-//         case "logout":
-//             return { ...store, currentUser: null };
-
-//         default:
-//             throw Error("Unknown action: " + action.type);
-//     }
-// }

@@ -59,13 +59,15 @@ export const SoundList = () => {
     setTimeout(() => setSelectedPlaylist(null), 350);
   };
 
-  const handleSelect = (pl) => {
-    dispatch({ type: "set_playlist", payload: pl });
-    navigate("/home");
-  };
-
   const handlePlayInPlace = (pl) => {
     dispatch({ type: "set_playlist", payload: pl });
+    dispatch({ type: "set_playing", payload: false });
+  };
+
+  const handleSelect = (pl) => {
+    dispatch({ type: "set_playlist", payload: pl });
+    dispatch({ type: "set_playing", payload: false });
+    navigate("/home");
   };
 
   if (loading) return <p>Cargando playlists...</p>;

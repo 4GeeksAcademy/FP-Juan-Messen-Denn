@@ -113,7 +113,7 @@ export const ProfilePage = () => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             },
-            body: JSON.stringify({ avatar_url: emoji })
+            body: JSON.stringify({ avatar_url: emoji || null })
         });
         if (res.ok) {
             const data = await res.json();
@@ -167,6 +167,13 @@ export const ProfilePage = () => {
                                 onClick={() => handleSelectAvatar(emoji)}
                             >{emoji}</button>
                         ))}
+                        {user.avatar_url && (
+                            <button
+                                className="prof-avatar-option prof-avatar-remove"
+                                onClick={() => handleSelectAvatar(null)}
+                                title="Quitar avatar"
+                            >✕</button>
+                        )}
                     </div>
                 )}
 
