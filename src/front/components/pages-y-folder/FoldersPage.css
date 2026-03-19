@@ -1,5 +1,5 @@
 .fp-page {
-  height: calc(100vh - 56px);
+  height: calc(100vh - 56px - 62px);
   background: #E8EDE6;
   display: flex;
   flex-direction: column;
