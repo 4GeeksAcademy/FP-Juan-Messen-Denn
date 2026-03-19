@@ -142,6 +142,14 @@ export const ProfilePage = () => {
         <div className="prof-page">
             <div className="prof-card">
 
+                {/* BOTÓN HOME */}
+                <div className="prof-top-bar">
+                    <button
+                        className="prof-btn-home"
+                        onClick={() => navigate("/home")}
+                    >← Home</button>
+                </div>
+
                 <div className="prof-avatar prof-avatar-clickable" onClick={() => setShowAvatarPicker(!showAvatarPicker)}>
                     {user.avatar_url
                         ? <span className="prof-avatar-emoji">{user.avatar_url}</span>

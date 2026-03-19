@@ -310,3 +310,24 @@
     transition: opacity 0.2s;
 }
 .prof-btn-danger:hover { opacity: 0.85; }
+
+.prof-top-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.prof-btn-home {
+    padding: 6px 12px;
+    font-size: 12px;
+    background: transparent;
+    border: 1.5px solid #2D3A4A;
+    border-radius: 8px;
+    color: #2D3A4A;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.prof-btn-home:hover { background: rgba(45, 58, 74, 0.06); }
