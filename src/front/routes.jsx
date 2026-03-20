@@ -14,6 +14,7 @@ import { Goals } from "./components/goals/Goals";
 import FoldersPage from "./components/pages-y-folder/FoldersPage";
 import { SoundList } from "./pages/API-externa/Freesound";
 import { ProfilePage } from "./pages/ProfilePage";
+import { AboutPage } from "./pages/AboutPage";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,6 +32,7 @@ export const router = createBrowserRouter(
         <Route path="/goals" element={<Goals />} />
         <Route path="/music" element={<SoundList />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/about" element={<AboutPage />} />
       </Route>
     </>
   )

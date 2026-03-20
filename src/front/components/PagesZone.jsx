@@ -21,6 +21,8 @@ export const PagesZone = () => {
     const [loadPages, setLoadPages] = useState([]);
     const [loadingPages, setLoadingPages] = useState(false);
     const [inlineFolderTitle, setInlineFolderTitle] = useState("");
+    const [showNewPageModal, setShowNewPageModal] = useState(false);
+    const [clearAfterSave, setClearAfterSave] = useState(false);
 
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
@@ -75,11 +77,16 @@ export const PagesZone = () => {
         if (data) {
             setSaved(true);
             setShowSaveModal(false);
-            setTitle("");
-            setContent("");
-            setSelectedFolder("");
-            setEditingPageId(null);
-            setError("");
+            if (clearAfterSave) {
+                clearEditor();
+                setClearAfterSave(false);
+            } else {
+                setTitle("");
+                setContent("");
+                setSelectedFolder("");
+                setEditingPageId(null);
+                setError("");
+            }
             setTimeout(() => setSaved(false), 3000);
         }
     };
@@ -114,6 +121,35 @@ export const PagesZone = () => {
             setNewFolderTitle("");
             setShowCreateFolderModal(false);
         }
+    };
+
+    const handleNewPage = () => {
+        setShowDropdown(false);
+        if (title.trim() || content.trim()) {
+            setShowNewPageModal(true);
+        } else {
+            clearEditor();
+        }
+    };
+
+    const clearEditor = () => {
+        setTitle("");
+        setContent("");
+        setEditingPageId(null);
+        setError("");
+    };
+
+    const handleSaveAndNew = () => {
+        setShowNewPageModal(false);
+        setInlineFolderTitle("");
+        setSelectedFolder("");
+        setClearAfterSave(true);
+        setShowSaveModal(true);
+    };
+
+    const handleDiscardAndNew = () => {
+        setShowNewPageModal(false);
+        clearEditor();
     };
 
     const handleSelectLoadPage = (page) => {
@@ -151,6 +187,10 @@ export const PagesZone = () => {
                         >+</button>
                         {showDropdown && (
                             <div className="pz-dropdown-menu">
+                                <button
+                                    className="pz-dropdown-item"
+                                    onClick={handleNewPage}
+                                >New page</button>
                                 <button
                                     className="pz-dropdown-item"
                                     onClick={() => { setShowDropdown(false); setShowCreateFolderModal(true); }}
@@ -306,6 +346,25 @@ export const PagesZone = () => {
                         <div className="pz-modal-actions" style={{ marginTop: "16px" }}>
                             <button className="pz-btn-cancel" onClick={() => setShowCreateFolderModal(false)}>Cancel</button>
                             <button className="pz-btn-primary" onClick={handleCreateFolder}>Create</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* NEW PAGE CONFIRMATION MODAL */}
+            {showNewPageModal && (
+                <div className="pz-overlay" onClick={() => setShowNewPageModal(false)}>
+                    <div className="pz-modal" onClick={e => e.stopPropagation()}>
+                        <div className="pz-modal-title">You have unsaved content</div>
+                        <p style={{ fontSize: "0.88rem", color: "var(--color-text-secondary)", margin: "0 0 1rem" }}>
+                            What do you want to do with "<strong>{title || "Untitled"}</strong>"?
+                        </p>
+                        <div className="pz-modal-actions" style={{ justifyContent: "space-between" }}>
+                            <button className="pz-btn-cancel" onClick={() => setShowNewPageModal(false)}>Cancel</button>
+                            <div style={{ display: "flex", gap: "8px" }}>
+                                <button className="pz-btn-cancel" onClick={handleDiscardAndNew}>Discard</button>
+                                <button className="pz-btn-primary" onClick={handleSaveAndNew}>Save</button>
+                            </div>
                         </div>
                     </div>
                 </div>
