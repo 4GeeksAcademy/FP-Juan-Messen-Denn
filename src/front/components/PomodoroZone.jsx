@@ -18,10 +18,13 @@ const formatTotal = (s) => {
 const hasHours = (s) => s >= 3600;
 
 export const PomodoroZone = () => {
-    const { store, dispatch } = useGlobalReducer();
+    const { store, dispatch, audioRef } = useGlobalReducer();
     const p = store.pomodoro;
     const { currentPlaylist, currentTrackIndex, isPlaying } = store;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [audioProgress, setAudioProgress] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+    const progressRef = useRef(null);
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
 
@@ -35,6 +38,49 @@ export const PomodoroZone = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isMenuOpen]);
+
+    useEffect(() => {
+        const audio = audioRef?.current;
+        if (!audio) return;
+        const update = () => {
+            if (audio.duration) {
+                setAudioProgress(audio.currentTime / audio.duration);
+            }
+        };
+        audio.addEventListener("timeupdate", update);
+        return () => audio.removeEventListener("timeupdate", update);
+    }, [audioRef, currentTrackIndex]);
+
+    const handleSeek = (e) => {
+        const audio = audioRef?.current;
+        if (!audio || !audio.duration) return;
+        const rect = progressRef.current.getBoundingClientRect();
+        const ratio = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+        audio.currentTime = ratio * audio.duration;
+        setAudioProgress(ratio);
+    };
+
+    const handleDragStart = (e) => {
+        e.preventDefault();
+        if (!audioRef?.current?.duration) return;
+        setIsDragging(true);
+        const onMove = (ev) => {
+            const rect = progressRef.current.getBoundingClientRect();
+            const ratio = Math.min(Math.max((ev.clientX - rect.left) / rect.width, 0), 1);
+            setAudioProgress(ratio);
+        };
+        const onUp = (ev) => {
+            const rect = progressRef.current.getBoundingClientRect();
+            const ratio = Math.min(Math.max((ev.clientX - rect.left) / rect.width, 0), 1);
+            audioRef.current.currentTime = ratio * audioRef.current.duration;
+            setAudioProgress(ratio);
+            setIsDragging(false);
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", onUp);
+        };
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+    };
 
     const phaseLabel = useMemo(() => {
         return p.currentPhase === "focus" ? "time to focus!" : "break time";
@@ -123,8 +169,27 @@ export const PomodoroZone = () => {
                 </div>
 
                 <div className="pomodoro-player">
-                    <div className="pomodoro-progress-line">
-                        <span className="pomodoro-progress-dot" />
+                    <div
+                        ref={progressRef}
+                        className="pomodoro-progress-line"
+                        onClick={handleSeek}
+                        style={{ cursor: currentPlaylist ? "pointer" : "default" }}
+                    >
+                        <div style={{
+                            position: "absolute",
+                            left: 0,
+                            top: 0,
+                            height: "100%",
+                            width: `${audioProgress * 100}%`,
+                            background: "#1A1A1A",
+                            opacity: 0.75,
+                            transition: isDragging ? "none" : "width 0.5s linear"
+                        }} />
+                        <span
+                            className="pomodoro-progress-dot"
+                            style={{ left: `${audioProgress * 100}%`, cursor: "grab" }}
+                            onMouseDown={handleDragStart}
+                        />
                     </div>
 
                     <div className="pomodoro-controls">
@@ -132,22 +197,43 @@ export const PomodoroZone = () => {
                             className="pomodoro-control-btn"
                             onClick={handlePreviousTrack}
                             disabled={!currentPlaylist || currentTrackIndex <= 0}
+                            style={{
+                                width: "36px", height: "36px", borderRadius: "50%",
+                                border: "1.5px solid #2D3A4A", background: "transparent",
+                                cursor: "pointer", display: "flex", alignItems: "center",
+                                justifyContent: "center", opacity: (!currentPlaylist || currentTrackIndex <= 0) ? 0.3 : 1
+                            }}
                         >
-                            back
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="#2D3A4A"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
                         </button>
                         <button
                             className="pomodoro-control-btn is-main"
                             onClick={handleTogglePlay}
                             disabled={!currentPlaylist}
+                            style={{
+                                width: "48px", height: "48px", borderRadius: "50%",
+                                border: "none", background: "#2D3A4A",
+                                cursor: "pointer", display: "flex", alignItems: "center",
+                                justifyContent: "center", opacity: !currentPlaylist ? 0.3 : 1
+                            }}
                         >
-                            {isPlaying ? "pause" : "play"}
+                            {isPlaying
+                                ? <svg width="16" height="16" viewBox="0 0 24 24" fill="#F2F5F0"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                : <svg width="16" height="16" viewBox="0 0 24 24" fill="#F2F5F0"><path d="M8 5v14l11-7z"/></svg>
+                            }
                         </button>
                         <button
                             className="pomodoro-control-btn"
                             onClick={handleNextTrack}
                             disabled={!currentPlaylist || currentTrackIndex >= (currentPlaylist?.sounds.length - 1)}
+                            style={{
+                                width: "36px", height: "36px", borderRadius: "50%",
+                                border: "1.5px solid #2D3A4A", background: "transparent",
+                                cursor: "pointer", display: "flex", alignItems: "center",
+                                justifyContent: "center", opacity: (!currentPlaylist || currentTrackIndex >= (currentPlaylist?.sounds.length - 1)) ? 0.3 : 1
+                            }}
                         >
-                            skip
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="#2D3A4A"><path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/></svg>
                         </button>
                     </div>
 

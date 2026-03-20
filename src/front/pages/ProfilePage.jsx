@@ -181,11 +181,13 @@ export const ProfilePage = () => {
                         className="prof-btn-home"
                         onClick={() => navigate("/home")}
                     >← Home</button>
-                    <button
-                        className="prof-btn-home"
-                        onClick={handleSaveProfile}
-                        style={{ margin: 0 }}
-                    >Save profile</button>
+                    {pendingAvatar !== undefined && (
+                        <button
+                            className="prof-btn-home"
+                            onClick={handleSaveProfile}
+                            style={{ margin: 0 }}
+                        >Save changes</button>
+                    )}
                 </div>
 
                 <div className="prof-avatar prof-avatar-clickable" onClick={() => setShowAvatarPicker(!showAvatarPicker)}>

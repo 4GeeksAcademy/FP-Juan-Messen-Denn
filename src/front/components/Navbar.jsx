@@ -17,7 +17,6 @@ export const Navbar = () => {
   const [user, setUser] = useState(null);
 
   const [showGoalsModal, setShowGoalsModal] = useState(false);
-  const [showAbout, setShowAbout] = useState(false);
   const [goals, setGoals] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
@@ -128,7 +127,7 @@ export const Navbar = () => {
         <div className="navbar-content">
 
           {/* Left: POMIFY */}
-          <div className="navbar-left" onClick={() => setShowAbout(true)} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+          <div className="navbar-left" onClick={() => navigate("/about")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
             <span style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", fontWeight: "600", border: "1.5px solid var(--color-text-secondary)", borderRadius: "50%", width: "16px", height: "16px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>i</span>
             <span className="navbar-brand">POMIFY</span>
           </div>
@@ -260,7 +259,7 @@ export const Navbar = () => {
 
             <div className="gmodal-footer">
               <button className="btn-primary" onClick={goals.length === 0 ? handleCreateGoalAndGo : () => { setShowGoalsModal(false); navigate("/goals"); }}>
-                {goals.length === 0 ? "Create Goal" : "View All"}
+                {goals.length === 0 ? "Go to Goals" : "View All"}
               </button>
             </div>
 
@@ -273,28 +272,6 @@ export const Navbar = () => {
       )}
       {showRegister && (
         <RegisterModal onClose={() => setShowRegister(false)} onSwitchToLogin={() => { setShowRegister(false); setShowLogin(true); }} />
-      )}
-
-      {showAbout && (
-        <div className="gmodal-overlay" onClick={() => setShowAbout(false)}>
-          <div className="gmodal-box" onClick={e => e.stopPropagation()} style={{ maxWidth: "520px" }}>
-            <div className="gmodal-header">
-              <h2>About Pomify</h2>
-              <button className="gmodal-close" onClick={() => setShowAbout(false)}>✕</button>
-            </div>
-            <div className="gmodal-list" style={{ padding: "1.5rem", gap: "1rem" }}>
-              <p style={{ color: "var(--color-text-primary)", lineHeight: "1.7", margin: 0 }}>
-                <strong>Pomify</strong> is a productivity app designed to help you focus and organize your work.
-                It combines a <strong>Pomodoro timer</strong> to manage your focus sessions, a <strong>notes and pages editor</strong> organized
-                in folders, a <strong>goals and objectives system</strong> to track your progress, and a selection
-                of <strong>ambient sound playlists</strong> to help you stay concentrated. All in one place, with a clean and minimalist interface.
-              </p>
-              <p style={{ color: "var(--color-text-secondary)", fontSize: "0.85rem", margin: 0, borderTop: "1px solid var(--color-divider)", paddingTop: "1rem" }}>
-                Created by <strong>Dennielys, Messen & Juan</strong>
-              </p>
-            </div>
-          </div>
-        </div>
       )}
 
     </>

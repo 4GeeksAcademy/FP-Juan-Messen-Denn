@@ -70,6 +70,7 @@ export function StoreProvider({ children }) {
             audioRef.current.src = preview;
             audioRef.current.load();
             audioRef.current.play().catch(() => {});
+            dispatch({ type: "set_playing", payload: true });
         }
     }, [store.currentPlaylist, store.currentTrackIndex]);
 
