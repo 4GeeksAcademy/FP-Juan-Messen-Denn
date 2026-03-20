@@ -1,52 +1,23 @@
-import React, { useEffect } from "react"
-import rigoImageUrl from "../assets/img/rigo-baby.jpg";
-import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import "../styles/home.css";
+import { PomodoroZone } from "../components/PomodoroZone";
+import { PagesZone } from "../components/PagesZone";
 
 export const Home = () => {
+    return (
+        <div className="home-wrapper">
+            <div className="row g-0 home-row">
 
-	const { store, dispatch } = useGlobalReducer()
+                <div className="col-12 col-xl-4 home-left">
+                    <PomodoroZone />
+                </div>
 
-	const loadMessage = async () => {
-		try {
-			const backendUrl = import.meta.env.VITE_BACKEND_URL
+                <div className="home-divider d-none d-xl-block" />
 
-			if (!backendUrl) throw new Error("VITE_BACKEND_URL is not defined in .env file")
+                <div className="col-12 col-xl home-right">
+                    <PagesZone />
+                </div>
 
-			const response = await fetch(backendUrl + "/api/hello")
-			const data = await response.json()
-
-			if (response.ok) dispatch({ type: "set_hello", payload: data.message })
-
-			return data
-
-		} catch (error) {
-			if (error.message) throw new Error(
-				`Could not fetch the message from the backend.
-				Please check if the backend is running and the backend port is public.`
-			);
-		}
-
-	}
-
-	useEffect(() => {
-		loadMessage()
-	}, [])
-
-	return (
-		<div className="text-center mt-5">
-			<h1 className="display-4">Hello Rigo!!</h1>
-			<p className="lead">
-				<img src={rigoImageUrl} className="img-fluid rounded-circle mb-3" alt="Rigo Baby" />
-			</p>
-			<div className="alert alert-info">
-				{store.message ? (
-					<span>{store.message}</span>
-				) : (
-					<span className="text-danger">
-						Loading message from the backend (make sure your python 🐍 backend is running)...
-					</span>
-				)}
-			</div>
-		</div>
-	);
-}; 
+            </div>
+        </div>
+    );
+};
