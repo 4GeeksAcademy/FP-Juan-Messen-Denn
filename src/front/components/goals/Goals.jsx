@@ -19,6 +19,15 @@ export const Goals = () => {
 
   useEffect(() => {
     loadGoals();
+
+    const handleRefresh = () => loadGoals();
+    window.addEventListener("goals:updated", handleRefresh);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) loadGoals();
+    });
+    return () => {
+      window.removeEventListener("goals:updated", handleRefresh);
+    };
   }, []);
 
   const loadGoals = async () => {
@@ -30,8 +39,8 @@ export const Goals = () => {
     if (!newGoal.trim()) return;
     const data = await createGoal(newGoal, newGoal);
     if (!data?.goal) return;
-    setGoals([...goals, data.goal]);
     setNewGoal("");
+    await loadGoals();
   };
 
   const startEditing = (goal) => {
@@ -100,6 +109,7 @@ export const Goals = () => {
               placeholder="Create a new goal..."
               value={newGoal}
               onChange={(e) => setNewGoal(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCreateGoal()}
             />
             <button className="btn-primary" onClick={handleCreateGoal}>
               Add

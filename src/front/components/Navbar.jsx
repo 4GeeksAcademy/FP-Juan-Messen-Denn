@@ -1,8 +1,9 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import "../styles/Navbar.css";
 import { useState, useEffect } from "react";
 import { LoginModal } from "./LoginModal";
 import { RegisterModal } from "./RegisterModal";
-import { getGoals, updateGoal, deleteGoal } from "./goals/GoalsService";
+import { getGoals, updateGoal, deleteGoal, createGoal } from "./goals/GoalsService";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -16,10 +17,11 @@ export const Navbar = () => {
   const [user, setUser] = useState(null);
 
   const [showGoalsModal, setShowGoalsModal] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const [goals, setGoals] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
-  const [selectedGoal, setSelectedGoal] = useState(null);
+  const [newGoalText, setNewGoalText] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -78,6 +80,23 @@ export const Navbar = () => {
     if (selectedGoal === id) setSelectedGoal(null);
   };
 
+  const handleCreateGoal = async () => {
+    if (!newGoalText.trim()) return;
+    const data = await createGoal(newGoalText.trim(), newGoalText.trim());
+    if (!data?.goal) return;
+    setGoals([...goals, data.goal]);
+    setNewGoalText("");
+    window.dispatchEvent(new Event("goals:updated"));
+  };
+
+  const handleCreateGoalAndGo = async () => {
+    if (newGoalText.trim()) {
+      await handleCreateGoal();
+    }
+    setShowGoalsModal(false);
+    navigate("/goals");
+  };
+
   const changeStatus = async (id, status) => {
     const data = await updateGoal(id, { status });
     if (!data?.goal) return;
@@ -109,9 +128,10 @@ export const Navbar = () => {
         <div className="navbar-content">
 
           {/* Left: POMIFY */}
-          <Link to="/" className="navbar-left">
+          <div className="navbar-left" onClick={() => setShowAbout(true)} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+            <span style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", fontWeight: "600", border: "1.5px solid var(--color-text-secondary)", borderRadius: "50%", width: "16px", height: "16px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>i</span>
             <span className="navbar-brand">POMIFY</span>
-          </Link>
+          </div>
 
           {/* Center: Your Goals */}
           {isLoggedIn && (
@@ -137,7 +157,7 @@ export const Navbar = () => {
                 {isDropdownOpen && (
                   <div className="dropdown-menu">
                     <Link to="/profile" onClick={() => setIsDropdownOpen(false)}>
-                      Editar perfil
+                      Edit profile
                     </Link>
                     <button onClick={handleLogout}>Logout</button>
                   </div>
@@ -165,9 +185,25 @@ export const Navbar = () => {
 
             <div className="gmodal-list">
               {goals.length === 0 && (
-                <p style={{ color: "var(--color-text-secondary)", textAlign: "center", padding: "1rem" }}>
-                  No tienes metas todavía.
-                </p>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "1rem", gap: "0.75rem" }}>
+                  <p style={{ color: "var(--color-text-secondary)", textAlign: "center", margin: 0 }}>
+                    No goals yet. Create one!
+                  </p>
+                  <div style={{ display: "flex", gap: "0.5rem", width: "100%" }}>
+                    <input
+                      className="gmodal-edit-input"
+                      style={{ flex: 1 }}
+                      placeholder="Write your new goal..."
+                      value={newGoalText}
+                      onChange={e => setNewGoalText(e.target.value)}
+                      onKeyDown={e => e.key === "Enter" && handleCreateGoal()}
+                      autoFocus
+                    />
+                    <button className="btn-primary" onClick={handleCreateGoal} style={{ whiteSpace: "nowrap" }}>
+                      + Create
+                    </button>
+                  </div>
+                </div>
               )}
               {goals.map(goal => (
                 <div key={goal.id} className="gmodal-item">
@@ -223,8 +259,8 @@ export const Navbar = () => {
             </div>
 
             <div className="gmodal-footer">
-              <button className="btn-primary" onClick={() => { setShowGoalsModal(false); navigate("/goals"); }}>
-                View All
+              <button className="btn-primary" onClick={goals.length === 0 ? handleCreateGoalAndGo : () => { setShowGoalsModal(false); navigate("/goals"); }}>
+                {goals.length === 0 ? "Create Goal" : "View All"}
               </button>
             </div>
 
@@ -239,217 +275,28 @@ export const Navbar = () => {
         <RegisterModal onClose={() => setShowRegister(false)} onSwitchToLogin={() => { setShowRegister(false); setShowLogin(true); }} />
       )}
 
-      <style jsx>{`
-        .navbar-container {
-          width: 100%;
-          background: var(--color-bg);
-          padding: 1rem 2rem;
-          display: flex;
-          justify-content: center;
-          box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-          position: sticky;
-          top: 0;
-          z-index: 100;
-        }
-        .navbar-content {
-          width: 100%;
-          max-width: 1200px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        .navbar-left {
-          display: flex;
-          align-items: center;
-          text-decoration: none;
-          min-width: 120px;
-        }
-        .navbar-brand {
-          font-size: 1.25rem;
-          font-weight: 900;
-          letter-spacing: 0.05em;
-          color: var(--color-text-primary);
-        }
-        .btn-goals-center {
-          display: flex;
-          align-items: center;
-          background: var(--color-surface);
-          border: 1px solid var(--color-divider);
-          border-radius: 999px;
-          padding: 5px 16px;
-          height: 42px;
-          font-size: 0.9rem;
-          font-weight: 500;
-          color: var(--color-text-primary);
-          cursor: pointer;
-          transition: background 0.2s ease;
-        }
-        .btn-goals-center:hover {
-          background: var(--color-divider);
-        }
-        .navbar-right {
-          display: flex;
-          align-items: center;
-          min-width: 120px;
-          justify-content: flex-end;
-        }
-        .auth-buttons button { margin-left: 0.5rem; }
-        .user-dropdown-container { position: relative; }
-        .user-pill {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: var(--color-surface);
-          border: 1px solid var(--color-divider);
-          border-radius: 999px;
-          padding: 5px 5px 5px 12px;
-          height: 42px;
-          cursor: pointer;
-          transition: background 0.2s ease;
-        }
-        .user-pill:hover {
-          background: var(--color-divider);
-        }
-        .user-avatar {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          background: var(--color-btn-primary-bg);
-          color: var(--color-btn-primary-text);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-          font-size: 0.8rem;
-          overflow: hidden;
-          flex-shrink: 0;
-        }
-        .user-name {
-          font-size: 0.9rem;
-          font-weight: 500;
-          color: var(--color-text-primary);
-        }
-        .dropdown-menu {
-          position: absolute;
-          right: 0;
-          top: calc(100% + 8px);
-          background: var(--color-surface);
-          border-radius: 10px;
-          padding: 0.5rem 0;
-          min-width: 160px;
-          display: flex;
-          flex-direction: column;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-          border: 0.5px solid var(--color-divider);
-          z-index: 50;
-        }
-        .dropdown-menu a,
-        .dropdown-menu button {
-          padding: 0.75rem 1rem;
-          text-decoration: none;
-          color: var(--color-text-primary);
-          background: transparent;
-          border: none;
-          text-align: left;
-          cursor: pointer;
-          font-size: 0.9rem;
-          transition: background 0.2s ease;
-        }
-        .dropdown-menu a:hover,
-        .dropdown-menu button:hover { background: rgba(45,58,74,0.06); }
-        .gmodal-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0,0,0,0.4);
-          z-index: 200;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .gmodal-box {
-          background: var(--color-surface);
-          border-radius: 16px;
-          width: 100%;
-          max-width: 480px;
-          max-height: 75vh;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-        }
-        .gmodal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.25rem 1.5rem;
-          border-bottom: 1px solid rgba(0,0,0,0.06);
-        }
-        .gmodal-header h2 { margin: 0; font-size: 1.1rem; }
-        .gmodal-close {
-          background: transparent;
-          border: none;
-          font-size: 1rem;
-          cursor: pointer;
-          color: var(--color-text-secondary);
-        }
-        .gmodal-list {
-          flex: 1;
-          overflow-y: auto;
-          padding: 1rem 1.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-        .gmodal-item {
-          background: var(--color-bg);
-          border-radius: 10px;
-          padding: 12px 14px;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
-        .gmodal-item-top {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 8px;
-        }
-        .gmodal-title {
-          font-size: 0.95rem;
-          color: var(--color-text-primary);
-          cursor: pointer;
-          flex: 1;
-        }
-        .gmodal-edit-input {
-          flex: 1;
-          border: 1px solid var(--color-divider);
-          border-radius: 6px;
-          padding: 4px 8px;
-          font-size: 0.9rem;
-          background: var(--color-surface);
-          color: var(--color-text-primary);
-        }
-        .gmodal-actions {
-          display: flex;
-          gap: 6px;
-        }
-        .gmodal-actions button {
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          font-size: 13px;
-          opacity: 0.6;
-          transition: opacity 0.2s;
-        }
-        .gmodal-actions button:hover { opacity: 1; }
-        .gmodal-status { display: flex; gap: 8px; }
-        .gmodal-footer {
-          padding: 1rem 1.5rem;
-          border-top: 1px solid rgba(0,0,0,0.06);
-          display: flex;
-          justify-content: flex-end;
-        }
-      `}</style>
+      {showAbout && (
+        <div className="gmodal-overlay" onClick={() => setShowAbout(false)}>
+          <div className="gmodal-box" onClick={e => e.stopPropagation()} style={{ maxWidth: "520px" }}>
+            <div className="gmodal-header">
+              <h2>About Pomify</h2>
+              <button className="gmodal-close" onClick={() => setShowAbout(false)}>✕</button>
+            </div>
+            <div className="gmodal-list" style={{ padding: "1.5rem", gap: "1rem" }}>
+              <p style={{ color: "var(--color-text-primary)", lineHeight: "1.7", margin: 0 }}>
+                <strong>Pomify</strong> is a productivity app designed to help you focus and organize your work.
+                It combines a <strong>Pomodoro timer</strong> to manage your focus sessions, a <strong>notes and pages editor</strong> organized
+                in folders, a <strong>goals and objectives system</strong> to track your progress, and a selection
+                of <strong>ambient sound playlists</strong> to help you stay concentrated. All in one place, with a clean and minimalist interface.
+              </p>
+              <p style={{ color: "var(--color-text-secondary)", fontSize: "0.85rem", margin: 0, borderTop: "1px solid var(--color-divider)", paddingTop: "1rem" }}>
+                Created by <strong>Dennielys, Messen & Juan</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
     </>
   );
 };

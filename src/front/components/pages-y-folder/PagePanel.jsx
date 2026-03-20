@@ -89,14 +89,14 @@ const PagePanel = ({
   if (editingPage) return (
     <div className="page-create-form">
       <div className="page-create-header">
-        <span className="page-create-title">Editar página</span>
+        <span className="page-create-title">Edit page</span>
         <button className="page-create-close" onClick={handleCancelEdit}>✕</button>
       </div>
       <div className="page-create-body">
-        <label className="page-create-label">Título</label>
+        <label className="page-create-label">Title</label>
         <input
           className="page-create-input"
-          placeholder="Título de la página..."
+          placeholder="Page title..."
           value={editTitle}
           onChange={e => setEditTitle(e.target.value)}
           autoFocus
@@ -104,14 +104,14 @@ const PagePanel = ({
         <label className="page-create-label">Contenido</label>
         <textarea
           className="page-create-textarea"
-          placeholder="Escribe tus apuntes aquí..."
+          placeholder="Write your notes here..."
           value={editContent}
           onChange={e => setEditContent(e.target.value)}
         />
       </div>
       <div className="page-create-footer">
-        <button className="page-create-btn-cancel" onClick={handleCancelEdit}>Cancelar</button>
-        <button className="page-create-btn-submit" onClick={handleSubmitEdit}>Guardar cambios</button>
+        <button className="page-create-btn-cancel" onClick={handleCancelEdit}>Cancel</button>
+        <button className="page-create-btn-submit" onClick={handleSubmitEdit}>Save changes</button>
       </div>
     </div>
   );
@@ -119,14 +119,14 @@ const PagePanel = ({
   if (showCreateForm) return (
     <div className="page-create-form">
       <div className="page-create-header">
-        <span className="page-create-title">Nueva página</span>
+        <span className="page-create-title">New page</span>
         <button className="page-create-close" onClick={handleCancelCreate}>✕</button>
       </div>
       <div className="page-create-body">
-        <label className="page-create-label">Título</label>
+        <label className="page-create-label">Title</label>
         <input
           className="page-create-input"
-          placeholder="Título de la página..."
+          placeholder="Page title..."
           value={newTitle}
           onChange={e => setNewTitle(e.target.value)}
           autoFocus
@@ -134,14 +134,14 @@ const PagePanel = ({
         <label className="page-create-label">Contenido</label>
         <textarea
           className="page-create-textarea"
-          placeholder="Escribe tus apuntes aquí..."
+          placeholder="Write your notes here..."
           value={newContent}
           onChange={e => setNewContent(e.target.value)}
         />
       </div>
       <div className="page-create-footer">
-        <button className="page-create-btn-cancel" onClick={handleCancelCreate}>Cancelar</button>
-        <button className="page-create-btn-submit" onClick={handleSubmitCreate}>Crear página</button>
+        <button className="page-create-btn-cancel" onClick={handleCancelCreate}>Cancel</button>
+        <button className="page-create-btn-submit" onClick={handleSubmitCreate}>Create page</button>
       </div>
     </div>
   );
@@ -153,7 +153,7 @@ const PagePanel = ({
           <path d="M10 25 C10 20 14 16 19 16 L38 16 C41 16 44 18 46 20 L50 25 L85 25 C90 25 94 29 94 34 L94 78 C94 83 90 87 85 87 L15 87 C10 87 6 83 6 78 L6 30 C6 27 8 25 10 25 Z"/>
         </svg>
       </div>
-      <div className="page-empty-text">Selecciona una carpeta para ver sus páginas</div>
+      <div className="page-empty-text">Select a folder to see its pages</div>
     </div>
   );
 
@@ -165,8 +165,8 @@ const PagePanel = ({
           <path d="M6 30 L20 30 L85 25 L94 34 L50 25 L46 20 C44 18 41 16 38 16 L19 16 C14 16 10 20 10 25 Z" fill="#2d6a8f"/>
         </svg>
       </div>
-      <div className="page-empty-text">No hay páginas en esta carpeta</div>
-      <button className="page-empty-btn" onClick={onCreatePage}>+ Crear nueva página o nota</button>
+      <div className="page-empty-text">No pages in this folder</div>
+      <button className="page-empty-btn" onClick={onCreatePage}>+ Create new page or note</button>
     </div>
   );
 
@@ -189,9 +189,9 @@ const PagePanel = ({
               <p className="item-title">{page.title}</p>
               <p className="item-preview">{page.content}</p>
               <div className="item-actions" onClick={e => e.stopPropagation()}>
-                <button className="item-act-btn edit" onClick={(e) => handleStartEdit(page, e)} title="Editar página">✏️</button>
-                <button className="item-act-btn move" onClick={() => onMovePage(page)} title="Cambiar de carpeta">📂</button>
-                <button className="item-act-btn del" onClick={() => onDeletePage(page)} title="Eliminar página">✕</button>
+                <button className="item-act-btn edit" onClick={(e) => handleStartEdit(page, e)} title="Edit page">✏️</button>
+                <button className="item-act-btn move" onClick={() => onMovePage(page)} title="Move to folder">📂</button>
+                <button className="item-act-btn del" onClick={() => onDeletePage(page)} title="Delete page">✕</button>
               </div>
             </div>
           </AnimatedItem>

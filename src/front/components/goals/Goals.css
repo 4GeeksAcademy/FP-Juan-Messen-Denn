@@ -242,3 +242,40 @@
   font-size: 0.9rem;
   color: var(--color-text-secondary);
 }
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .goals-page {
+    padding: 20px 16px;
+  }
+
+  .goals-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-column {
+    order: -1;
+  }
+
+  .chart-card {
+    padding: 1.2rem;
+  }
+
+  .pie {
+    width: 140px;
+    height: 140px;
+  }
+
+  .pie::after {
+    width: 80px;
+    height: 80px;
+  }
+
+  .goal-create {
+    flex-direction: column;
+  }
+
+  .status-btn {
+    font-size: 0.78rem;
+    padding: 5px 0;
+  }
+}

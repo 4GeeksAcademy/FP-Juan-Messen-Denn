@@ -201,3 +201,26 @@
     font-size: 0.85rem;
     cursor: pointer;
 }
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .pomodoro-card {
+    max-width: 100%;
+    padding: 20px 16px;
+    gap: 20px;
+    border-radius: 14px;
+  }
+
+  .pomodoro-time {
+    font-size: clamp(2.8rem, 15vw, 3.6rem);
+  }
+
+  .pomodoro-start-button {
+    width: 68px;
+    height: 68px;
+  }
+
+  .pomodoro-start-button.is-break-skipped {
+    width: 80px;
+    height: 80px;
+  }
+}
