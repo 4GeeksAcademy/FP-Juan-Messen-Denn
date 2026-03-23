@@ -81,7 +81,7 @@ export const SoundList = () => {
 
   return (
     <>
-      <div className="sound-playlists container mt-5">
+      <div className="sound-playlists container mt-2">
         <div style={{ position: "relative", display: "flex", alignItems: "center", marginBottom: "1rem" }}>
           <button
             onClick={() => navigate("/home")}
@@ -155,7 +155,11 @@ export const SoundList = () => {
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <p>{sound.name}</p>
-                      <audio controls>
+                      <audio controls onPlay={(e) => {
+                        document.querySelectorAll(".modal-sounds audio").forEach(a => {
+                          if (a !== e.target) { a.pause(); a.currentTime = 0; }
+                        });
+                      }}>
                         <source src={previewUrl} />
                       </audio>
                     </div>
