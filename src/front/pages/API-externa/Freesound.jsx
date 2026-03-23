@@ -11,8 +11,7 @@ export const SoundList = () => {
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const { dispatch, store } = useGlobalReducer();
-  const { currentPlaylist, isPlaying } = store;
+  const { dispatch } = useGlobalReducer();
   const navigate = useNavigate();
 
   const playlists = [
@@ -60,20 +59,13 @@ export const SoundList = () => {
     setTimeout(() => setSelectedPlaylist(null), 350);
   };
 
-  const handlePlayInPlace = (pl) => {
-    const isThisPlaylist = currentPlaylist?.name === pl.name;
-    if (isThisPlaylist) {
-      dispatch({ type: "set_playing", payload: !isPlaying });
-    } else {
-      dispatch({ type: "set_playlist", payload: pl });
-      dispatch({ type: "set_playing", payload: true });
-    }
-  };
-
   const handleSelect = (pl) => {
     dispatch({ type: "set_playlist", payload: pl });
-    dispatch({ type: "set_playing", payload: false });
     navigate("/home");
+  };
+
+  const handlePlayInPlace = (pl) => {
+    dispatch({ type: "set_playlist", payload: pl });
   };
 
   if (loading) return <p>Cargando playlists...</p>;
@@ -81,27 +73,24 @@ export const SoundList = () => {
 
   return (
     <>
-      <div className="sound-playlists container mt-2">
-        <div style={{ position: "relative", display: "flex", alignItems: "center", marginBottom: "1rem" }}>
-          <button
-            onClick={() => navigate("/home")}
-            style={{
-              position: "absolute",
-              left: 0,
-              padding: "8px 16px",
-              borderRadius: "8px",
-              border: "1.5px solid var(--color-divider)",
-              background: "transparent",
-              color: "var(--color-text-primary)",
-              cursor: "pointer",
-              fontSize: "0.9rem",
-              whiteSpace: "nowrap"
-            }}
-          >
-            ← Back to home
-          </button>
-          <h1 style={{ margin: 0, width: "100%", textAlign: "center" }}>Sound Playlists</h1>
-        </div>
+      <button
+        onClick={() => navigate("/home")}
+        style={{
+          margin: "1rem 0 0 1rem",
+          padding: "8px 16px",
+          borderRadius: "8px",
+          border: "1.5px solid var(--color-divider)",
+          background: "transparent",
+          color: "var(--color-text-primary)",
+          cursor: "pointer",
+          fontSize: "0.9rem"
+        }}
+      >
+        ← Back to home
+      </button>
+
+      <div className="sound-playlists container mt-5">
+        <h1>Sound Playlists</h1>
 
         <div className="row">
           {playlistsData.map((pl) => (
@@ -109,9 +98,7 @@ export const SoundList = () => {
               <div className="playlist-card h-100 shadow-sm">
                 <div className="playlist-image-container">
                   <img src={pl.coverImage} alt={pl.name} />
-                  <button className="play-button" onClick={() => handlePlayInPlace(pl)}>
-                    {currentPlaylist?.name === pl.name && isPlaying ? "⏸" : "▶"}
-                  </button>
+                  <button className="play-button" onClick={() => handlePlayInPlace(pl)}>▶</button>
                   <div className="overlay">{pl.name}</div>
                 </div>
                 <div className="card-body">
@@ -119,13 +106,13 @@ export const SoundList = () => {
                     className="btn btn-primary btn-sm"
                     onClick={() => openModal(pl)}
                   >
-                    View
+                    Ver
                   </button>
                   <button
                     className="btn btn-outline btn-sm"
                     onClick={() => handleSelect(pl)}
                   >
-                    Select
+                    Seleccionar
                   </button>
                 </div>
               </div>
