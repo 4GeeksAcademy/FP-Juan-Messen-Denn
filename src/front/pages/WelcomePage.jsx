@@ -29,7 +29,6 @@ export const WelcomePage = () => {
 
         <section className="welcome-hero">
           <div className="welcome-hero-inner">
-            <p className="welcome-eyebrow">A space to work or study with focus.</p>
             <div className="welcome-hero-row">
               <h1 className="welcome-title">
                 <TypingText />

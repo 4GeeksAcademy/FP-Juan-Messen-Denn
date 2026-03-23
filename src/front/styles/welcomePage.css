@@ -27,7 +27,6 @@
   overflow-x: hidden;
 }
 
-/* ── TOPBAR ── */
 .welcome-topbar {
   display: flex;
   justify-content: center;
@@ -44,7 +43,6 @@
   font-family: 'Inter', 'DM Sans', sans-serif;
 }
 
-/* ── HERO ── */
 .welcome-hero {
   min-height: calc(100vh - 109px);
   display: flex;
@@ -150,7 +148,6 @@
   transform: translateY(-2px);
 }
 
-/* ── SECTIONS WRAPPER ── */
 .welcome-sections {
   display: flex;
   flex-direction: column;
@@ -161,7 +158,6 @@
   padding: 0 16px;
 }
 
-/* ── WCARD — unified section card ── */
 .wcard {
   background: var(--surface);
   border-radius: 28px;
@@ -205,7 +201,7 @@
   line-height: 1.55;
 }
 
-/* ── WCARD VISUAL — generic visual wrapper ── */
+
 .wcard-visual {
   display: flex;
   align-items: center;
@@ -214,7 +210,6 @@
   overflow: visible;
 }
 
-/* ── POMODORO STACKED CARDS ── */
 .wcard-visual--stack {
   display: flex;
   flex-direction: column;
@@ -262,7 +257,6 @@
   line-height: 1.4;
 }
 
-/* ── FOLDER VISUAL ── */
 .folder-outer {
   display: flex;
   align-items: flex-end;
@@ -272,7 +266,6 @@
   height: 260px;
 }
 
-/* ── TILTEDCARD VISUAL ── */
 .tiltedcard-outer {
   display: flex;
   align-items: center;
@@ -280,7 +273,6 @@
   overflow: visible;
 }
 
-/* ── CTA ── */
 .welcome-cta {
   display: flex;
   justify-content: center;
@@ -307,7 +299,6 @@
   box-shadow: 0 8px 28px rgba(45, 58, 74, 0.3);
 }
 
-/* ── FOOTER ── */
 .welcome-footer {
   display: flex;
   justify-content: space-between;
@@ -318,7 +309,7 @@
   color: rgba(26, 26, 26, 0.35);
 }
 
-/* ── TYPING CURSOR ── */
+
 .typing-cursor {
   animation: blink 0.7s infinite;
   font-weight: 300;
@@ -330,7 +321,7 @@
   50% { opacity: 0; }
 }
 
-/* ── TABLET ≥ 768px ── */
+
 @media (min-width: 768px) {
   .welcome-topbar { padding: 28px 56px; }
 
@@ -340,19 +331,22 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 56px;
+    gap: 40px;
   }
 
   .welcome-title {
-    flex-shrink: 0;
+    font-size: clamp(32px, 5vw, 56px);
+    letter-spacing: -2px;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .welcome-hero-right {
-    max-width: 380px;
-    flex-shrink: 0;
+    flex: 0 0 280px;
+    max-width: 280px;
   }
 
-  .welcome-text { max-width: 380px; }
+  .welcome-text { max-width: 280px; }
 
   .welcome-sections {
     padding: 0 24px;
@@ -399,6 +393,18 @@
     padding-left: 10vw;
   }
 
+  .welcome-title {
+    font-size: clamp(40px, 7vw, 76px);
+    letter-spacing: -3px;
+  }
+
+  .welcome-hero-right {
+    flex: 0 0 360px;
+    max-width: 360px;
+  }
+
+  .welcome-text { max-width: 360px; }
+
   .welcome-sections {
     padding: 0 40px;
     gap: 32px;
@@ -419,7 +425,6 @@
   }
 }
 
-/* ── MOBILE ≤ 480px ── */
 @media (max-width: 480px) {
   .welcome-hero {
     padding: 36px 20px;
