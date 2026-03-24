@@ -126,20 +126,20 @@ export const Navbar = () => {
       <nav className="navbar-container">
         <div className="navbar-content">
 
-          {/* Left: POMIFY */}
+          
           <div className="navbar-left" onClick={() => navigate("/about")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
             <span style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", fontWeight: "600", border: "1.5px solid var(--color-text-secondary)", borderRadius: "50%", width: "16px", height: "16px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>i</span>
             <span className="navbar-brand">POMIFY</span>
           </div>
 
-          {/* Center: Your Goals */}
+          
           {isLoggedIn && (
             <button className="btn-goals-center" onClick={openGoalsModal}>
               Your Goals
             </button>
           )}
 
-          {/* Right: Auth o User */}
+          
           <div className="navbar-right">
             {isLoggedIn ? (
               <div className="user-dropdown-container">
@@ -158,6 +158,9 @@ export const Navbar = () => {
                     <Link to="/profile" onClick={() => setIsDropdownOpen(false)}>
                       Edit profile
                     </Link>
+                    <Link to="/folders" onClick={() => setIsDropdownOpen(false)}>
+                      My folders
+                    </Link>
                     <button onClick={handleLogout}>Logout</button>
                   </div>
                 )}
@@ -172,7 +175,7 @@ export const Navbar = () => {
         </div>
       </nav>
 
-      {/* Goals Modal */}
+      
       {showGoalsModal && (
         <div className="gmodal-overlay" onClick={() => setShowGoalsModal(false)}>
           <div className="gmodal-box" onClick={e => e.stopPropagation()}>

@@ -57,20 +57,44 @@ export const AboutPage = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="about-page">
+        <div style={{
+            maxWidth: "720px",
+            margin: "0 auto",
+            padding: "2.5rem 1.5rem",
+            fontFamily: "'Inter', 'DM Sans', sans-serif"
+        }}>
+            <button
+                onClick={() => navigate("/home")}
+                style={{
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    border: "1.5px solid var(--color-divider)",
+                    background: "transparent",
+                    color: "var(--color-text-primary)",
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
+                    marginBottom: "2rem",
+                    display: "inline-block"
+                }}
+            >← Home</button>
 
-            <button className="about-back-btn" onClick={() => navigate("/home")}>
-                ← Home
-            </button>
-
-            <div className="about-hero">
-                <h1 className="about-hero-title">POMIFY</h1>
-                <p className="about-hero-tagline">
-                    A productivity app designed to help you focus, organise your work,
-                    and reach your goals — all in one place.
-                </p>
-                <p className="about-hero-sub">
-                    Everything you need for a focused work session, nothing you don't.
+            {/* Hero */}
+            <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+                <h1 style={{
+                    fontSize: "clamp(2.5rem, 6vw, 3.5rem)",
+                    fontWeight: 900,
+                    letterSpacing: "-0.02em",
+                    color: "var(--color-text-primary)",
+                    margin: "0 0 1rem"
+                }}>POMIFY</h1>
+                <p style={{
+                    fontSize: "1.1rem",
+                    color: "var(--color-text-secondary)",
+                    lineHeight: 1.7,
+                    maxWidth: "520px",
+                    margin: "0 auto"
+                }}>
+                    A productivity app designed to help you focus, organize your work, and achieve your goals — all in one place.
                 </p>
             </div>
 
@@ -116,10 +140,30 @@ export const AboutPage = () => {
                 </button>
             </div>
 
-            <div className="about-footer">
-                <p className="about-footer-built">Built by</p>
-                <p className="about-footer-names">Dennielys · Messen · Juan</p>
-                <p className="about-footer-copy">© 2026 Pomify — All rights reserved</p>
+            {/* Team */}
+            <div style={{
+                background: "var(--color-surface)",
+                borderRadius: "14px",
+                padding: "2rem",
+                border: "1px solid var(--color-divider)",
+                textAlign: "center"
+            }}>
+                <h2 style={{
+                    fontSize: "1.1rem",
+                    fontWeight: 700,
+                    color: "var(--color-text-primary)",
+                    margin: "0 0 0.5rem"
+                }}>Built by</h2>
+                <p style={{
+                    fontSize: "1rem",
+                    color: "var(--color-text-secondary)",
+                    margin: "0 0 1rem"
+                }}>Dennielys · Messen · Juan</p>
+                <p style={{
+                    fontSize: "0.82rem",
+                    color: "var(--color-text-secondary)",
+                    margin: 0
+                }}>© 2026 Pomify — All rights reserved</p>
             </div>
 
         </div>

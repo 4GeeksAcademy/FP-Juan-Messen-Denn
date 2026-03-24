@@ -332,7 +332,8 @@
     transition: background 0.2s;
 }
 .prof-btn-home:hover { background: rgba(45, 58, 74, 0.06); }
-/* RESPONSIVE */
+
+
 @media (max-width: 768px) {
   .prof-page {
     padding: 1rem;
