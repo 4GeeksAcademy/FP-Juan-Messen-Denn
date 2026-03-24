@@ -31,7 +31,7 @@ export const LoginModal = ({ onClose, onSwitchToRegister }) => {
             const data = await loginUser({ ...user, email: user.email.trim().toLowerCase() });
             localStorage.setItem("token", data.token);
             onClose();
-            navigate("/home");
+            navigate("/about");
         } catch (err) {
             setError(err.message);
         }
