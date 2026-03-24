@@ -122,7 +122,7 @@ export const PomodoroZone = () => {
                             className="pomodoro-time-button"
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                         >
-                            Time
+                            Pomodoro Time
                         </button>
 
                         {isMenuOpen && (
