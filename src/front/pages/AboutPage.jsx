@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "../styles/aboutPage.css"
-
+import pomifyLogo from "../assets/img/pomify_logo.png";
 
 const features = [
     {
@@ -80,13 +80,15 @@ export const AboutPage = () => {
 
             {/* Hero */}
             <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-                <h1 style={{
-                    fontSize: "clamp(2.5rem, 6vw, 3.5rem)",
-                    fontWeight: 900,
-                    letterSpacing: "-0.02em",
-                    color: "var(--color-text-primary)",
-                    margin: "0 0 1rem"
-                }}>POMIFY</h1>
+                <img
+                    src={pomifyLogo}
+                    alt="Pomify"
+                    style={{
+                        height: "clamp(60px, 10vw, 120px)",
+                        width: "auto",
+                        marginBottom: "1rem"
+                    }}
+                />
                 <p style={{
                     fontSize: "1.1rem",
                     color: "var(--color-text-secondary)",
@@ -105,18 +107,13 @@ export const AboutPage = () => {
                     key={index}
                     className={`about-feature-row${feature.reverse ? " reverse" : ""}`}
                 >
-                    {/* Screenshot */}
                     {feature.image ? (
                         <div className="about-feature-img-wrap">
                             <img
                                 src={feature.image}
                                 alt={feature.alt}
                                 onError={(e) => {
-                                    // If image not found, swap to placeholder
                                     e.currentTarget.parentElement.style.display = "none";
-                                    e.currentTarget.parentElement.nextSibling?.style
-                                        ? null
-                                        : null;
                                 }}
                             />
                         </div>
@@ -165,7 +162,6 @@ export const AboutPage = () => {
                     margin: 0
                 }}>© 2026 Pomify — All rights reserved</p>
             </div>
-
         </div>
     );
 };
