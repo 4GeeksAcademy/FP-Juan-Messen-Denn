@@ -48,7 +48,7 @@ export const AboutPage = () => {
                 }}
             >← Home</button>
 
-            {/* Hero */}
+            
             <div style={{ textAlign: "center", marginBottom: "3rem" }}>
                 <h1 style={{
                     fontSize: "clamp(2.5rem, 6vw, 3.5rem)",
@@ -68,7 +68,7 @@ export const AboutPage = () => {
                 </p>
             </div>
 
-            {/* Features */}
+            
             <div style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
@@ -100,7 +100,7 @@ export const AboutPage = () => {
                 ))}
             </div>
 
-            {/* Team */}
+            
             <div style={{
                 background: "var(--color-surface)",
                 borderRadius: "14px",

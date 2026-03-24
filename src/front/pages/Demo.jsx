@@ -9,7 +9,7 @@ export const Demo = () => {
   return (
     <div className="container">
       <ul className="list-group">
-        {/* Map over the 'todos' array from the store and render each item as a list element */}
+        
         {store && store.todos?.map((item) => {
           return (
             <li
@@ -17,7 +17,7 @@ export const Demo = () => {
               className="list-group-item d-flex justify-content-between"
               style={{ background: item.background }}> 
               
-              {/* Link to the detail page of this todo. */}
+              
               <Link to={"/single/" + item.id}>Link to: {item.title} </Link>
               
               <p>Open file ./store.js to see the global store that contains and updates the list of colors</p>
