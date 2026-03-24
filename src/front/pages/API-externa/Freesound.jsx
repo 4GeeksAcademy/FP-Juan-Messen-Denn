@@ -138,30 +138,28 @@ export const SoundList = () => {
           >
             <div className="modal-playlist-header">
               <h2>{selectedPlaylist.name}</h2>
-              <button className="close-modal" onClick={closeModal}>✕</button>
-            </div>
-            <div className="modal-sounds">
-              {selectedPlaylist.sounds.map((sound, index) => {
-                const previewUrl = getPreview(sound);
-                if (!previewUrl) return null;
-                return (
-                  <div
-                    key={sound.id}
-                    className="modal-sound-item"
-                    style={{ animationDelay: `${index * 0.05}s` }}
-                  >
-                    <p>{sound.name}</p>
-                    <audio controls>
-                      <source src={previewUrl} />
-                    </audio>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="modal-playlist-footer">
-              <button className="btn-primary" onClick={() => { handleSelect(selectedPlaylist); closeModal(); }}>
-                Select this playlist
-              </button>
+              <div className="modal-sounds">
+                {selectedPlaylist.sounds.map((sound, index) => {
+                  const previewUrl = getPreview(sound);
+                  if (!previewUrl) return null;
+                  return (
+                    <div
+                      key={sound.id}
+                      className="modal-sound-item"
+                      style={{ animationDelay: `${index * 0.05}s` }}
+                    >
+                      <p>{sound.name}</p>
+                      <audio controls onPlay={(e) => {
+                        document.querySelectorAll(".modal-sounds audio").forEach(a => {
+                          if (a !== e.target) { a.pause(); a.currentTime = 0; }
+                        });
+                      }}>
+                        <source src={previewUrl} />
+                      </audio>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>

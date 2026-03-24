@@ -101,7 +101,7 @@ export const PagesZone = () => {
         setShowSaveModal(true);
     };
 
-    // Crear carpeta desde dentro del modal de guardar
+    
     const handleInlineCreateFolder = async () => {
         if (!inlineFolderTitle.trim()) return;
         const data = await createFolder(inlineFolderTitle.trim());
@@ -225,7 +225,7 @@ export const PagesZone = () => {
 
             {error && <p className="pz-error">{error}</p>}
 
-            {/* SAVE MODAL */}
+           
             {showSaveModal && (
                 <div className="pz-overlay" onClick={() => setShowSaveModal(false)}>
                     <div className="pz-modal" onClick={e => e.stopPropagation()}>
@@ -278,7 +278,7 @@ export const PagesZone = () => {
                 </div>
             )}
 
-            {/* LOAD PAGE MODAL */}
+            
             {showLoadModal && (
                 <div className="pz-overlay" onClick={handleCancelLoad}>
                     <div className="pz-modal" onClick={e => e.stopPropagation()}>
@@ -330,7 +330,7 @@ export const PagesZone = () => {
                 </div>
             )}
 
-            {/* NEW FOLDER MODAL */}
+            
             {showCreateFolderModal && (
                 <div className="pz-overlay" onClick={() => setShowCreateFolderModal(false)}>
                     <div className="pz-modal" onClick={e => e.stopPropagation()}>
@@ -351,7 +351,7 @@ export const PagesZone = () => {
                 </div>
             )}
 
-            {/* NEW PAGE CONFIRMATION MODAL */}
+            
             {showNewPageModal && (
                 <div className="pz-overlay" onClick={() => setShowNewPageModal(false)}>
                     <div className="pz-modal" onClick={e => e.stopPropagation()}>

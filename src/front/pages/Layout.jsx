@@ -1,15 +1,16 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom/dist";
+import { Outlet, useLocation } from "react-router-dom/dist";
 import ScrollToTop from "../components/ScrollToTop";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { getProfile } from "../services/loginBS";
- 
+
 export const Layout = () => {
     const { dispatch } = useGlobalReducer();
-    const isMobile = window.innerWidth <= 767;
- 
+    const location = useLocation();
+    const isHome = location.pathname === "/home";
+
     useEffect(() => {
         const loadUser = async () => {
             const token = localStorage.getItem("token");
@@ -24,24 +25,28 @@ export const Layout = () => {
         };
         loadUser();
     }, []);
- 
+
     return (
         <ScrollToTop>
-            <div style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100vh",
-                overflow: "hidden",
-                minHeight: "100vh"
-            }}>
-                <Navbar />
-                <main style={{
-                    flex: 1,
-                    overflow: "auto",
-                    minHeight: 0,
+            <div
+                style={{
                     display: "flex",
-                    flexDirection: "column"
-                }}>
+                    flexDirection: "column",
+                    height: isHome ? "100vh" : "auto",
+                    minHeight: "100vh",
+                    overflow: isHome ? "hidden" : "visible",
+                }}
+            >
+                <Navbar />
+                <main
+                    style={{
+                        flex: 1,
+                        minHeight: 0,
+                        display: "flex",
+                        flexDirection: "column",
+                        overflow: isHome ? "hidden" : "visible",
+                    }}
+                >
                     <Outlet />
                 </main>
                 <Footer />

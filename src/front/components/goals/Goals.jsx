@@ -380,6 +380,7 @@ export const Goals = () => {
           )}
         </div>
 
+        
         <div className="chart-column">
           <div className="chart-card">
             <div
