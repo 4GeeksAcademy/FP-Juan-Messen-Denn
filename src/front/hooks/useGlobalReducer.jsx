@@ -1,4 +1,4 @@
-import { useContext, useReducer, createContext, useEffect, useRef } from "react";
+import { useContext, useReducer, createContext, useEffect, useRef, useCallback } from "react";
 import storeReducer, { initialStore } from "../store";
 
 const StoreContext = createContext();
@@ -37,6 +37,29 @@ const persistingReducer = (store, action) => {
     return next;
 };
 
+const playBreakAlarm = () => {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523.25, 659.25, 783.99];
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = "sine";
+            osc.frequency.value = freq;
+            const start = ctx.currentTime + i * 0.38;
+            const end = start + 0.32;
+            gain.gain.setValueAtTime(0, start);
+            gain.gain.linearRampToValueAtTime(0.6, start + 0.04);
+            gain.gain.linearRampToValueAtTime(0, end);
+            osc.start(start);
+            osc.stop(end + 0.05);
+        });
+        setTimeout(() => ctx.close(), 2000);
+    } catch {}
+};
+
 export function StoreProvider({ children }) {
     const [store, dispatch] = useReducer(persistingReducer, getInitialStore());
     const phaseLeftRef = useRef(store.pomodoro.phaseLeft);
@@ -48,19 +71,18 @@ export function StoreProvider({ children }) {
         phaseLeftRef.current = store.pomodoro.phaseLeft;
     }, [store]);
 
-    // Tick del pomodoro
     useEffect(() => {
         const interval = setInterval(() => {
             if (!storeRef.current.pomodoro.isRunning) return;
             dispatch({ type: "pomodoro_tick" });
             if (phaseLeftRef.current <= 1) {
+                playBreakAlarm();
                 dispatch({ type: "pomodoro_phase_end" });
             }
         }, 1000);
         return () => clearInterval(interval);
     }, []);
 
-    // Cambia la pista cuando cambia playlist o índice
     useEffect(() => {
         const { currentPlaylist, currentTrackIndex } = storeRef.current;
         if (!currentPlaylist || !audioRef.current) return;
@@ -74,7 +96,6 @@ export function StoreProvider({ children }) {
         }
     }, [store.currentPlaylist, store.currentTrackIndex]);
 
-    // Pausa o reanuda
     useEffect(() => {
         if (!audioRef.current) return;
         if (store.isPlaying) {
