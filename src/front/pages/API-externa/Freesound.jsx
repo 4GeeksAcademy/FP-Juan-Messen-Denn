@@ -142,7 +142,11 @@ export const SoundList = () => {
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <p>{sound.name}</p>
-                      <audio controls>
+                      <audio controls onPlay={(e) => {
+                        document.querySelectorAll(".modal-sounds audio").forEach(a => {
+                          if (a !== e.target) { a.pause(); a.currentTime = 0; }
+                        });
+                      }}>
                         <source src={previewUrl} />
                       </audio>
                     </div>
