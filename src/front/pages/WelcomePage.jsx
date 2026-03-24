@@ -93,7 +93,7 @@ export const WelcomePage = () => {
               <div className="wcard-visual">
                 <div className="tiltedcard-outer">
                   <TiltedCard
-                    imageSrc="https://i.pinimg.com/1200x/1b/b5/56/1bb55646df752120ac7e21b22a12b93a.jpg"
+                    imageSrc="https://i.pinimg.com/736x/be/09/0c/be090cb8fe6361c5209aba57dd19958a.jpg"
                     altText="Focus music"
                     captionText="Focus Music"
                     containerHeight="220px"
