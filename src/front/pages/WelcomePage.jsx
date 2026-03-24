@@ -6,6 +6,7 @@ import { RegisterModal } from "../components/RegisterModal";
 import { LoginModal } from "../components/LoginModal";
 import Folder from "../components/Folder";
 import TiltedCard from "../components/TiltedCard";
+import pomifyLogo from "../assets/img/pomify_logo.png";
 
 const POMODORO_MODES = [
   { label: "20/5", title: "Light Focus", desc: "20 min focus · 5 min break · 3 cycles", bg: "#E2E8DF" },
@@ -24,7 +25,7 @@ export const WelcomePage = () => {
       <div className="welcome-container">
 
         <header className="welcome-topbar" id="welcome-top">
-          <span className="welcome-brand">pomify.</span>
+          <img src={pomifyLogo} alt="Pomify" style={{ height: "32px", width: "auto" }} />
         </header>
 
         <section className="welcome-hero">

@@ -154,7 +154,7 @@ export const Goals = () => {
           fontSize: "0.9rem"
         }}
       >
-        ← Back to home
+        ← Home
       </button>
 
       <h1 className="goals-title">Your Goals</h1>
