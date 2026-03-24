@@ -178,7 +178,7 @@ export const Goals = () => {
 
         </div>
 
-        {/* RIGHT COLUMN */}
+        
         <div className="chart-column">
           <div className="chart-card">
             <div

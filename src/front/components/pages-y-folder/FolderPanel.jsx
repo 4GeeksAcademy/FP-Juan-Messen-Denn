@@ -10,13 +10,13 @@ const FolderClosedIcon = () => (
 
 const FolderOpenIcon = () => (
   <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    {/* Carpeta abierta */}
+   
     <path d="M6 30 L6 78 C6 83 10 87 15 87 L85 87 C90 87 94 83 94 78 L94 34 C94 29 90 25 85 25 L50 25 L46 20 C44 18 41 16 38 16 L19 16 C14 16 10 20 10 25 Z" fill="#457b9d"/>
-    {/* Tapa abierta */}
+    
     <path d="M6 30 L20 30 L85 25 L94 34 L50 25 L46 20 C44 18 41 16 38 16 L19 16 C14 16 10 20 10 25 Z" fill="#2d6a8f"/>
-    {/* Página blanca dentro */}
+    
     <rect x="32" y="38" width="36" height="44" rx="3" fill="white" opacity="0.95"/>
-    {/* Líneas en la página */}
+    
     <line x1="38" y1="48" x2="62" y2="48" stroke="#B0BBA8" strokeWidth="2.5" strokeLinecap="round"/>
     <line x1="38" y1="56" x2="62" y2="56" stroke="#B0BBA8" strokeWidth="2.5" strokeLinecap="round"/>
     <line x1="38" y1="64" x2="55" y2="64" stroke="#B0BBA8" strokeWidth="2.5" strokeLinecap="round"/>
@@ -113,12 +113,12 @@ const FolderPanel = ({
                 />
               )}
 
-              {/* Icono dinámico */}
+              
               <span className="folder-icon" style={{ flexShrink: 0 }}>
                 {folderHasPages(folder.id) ? <FolderOpenIcon /> : <FolderClosedIcon />}
               </span>
 
-              {/* Nombre o input de edición */}
+              
               {editingId === folder.id ? (
                 <>
                   <input

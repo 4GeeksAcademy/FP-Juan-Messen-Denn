@@ -1,6 +1,6 @@
 const backend_url = import.meta.env.VITE_BACKEND_URL; // ej: http://localhost:3001
 
-// GET ALL GOALS
+
 export const getGoals = async () => {
   const response = await fetch(`${backend_url}/api/goals/`, {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
@@ -9,7 +9,7 @@ export const getGoals = async () => {
   return await response.json();
 };
 
-// GET SINGLE GOAL
+
 export const getGoal = async (goalId) => {
   const response = await fetch(`${backend_url}/api/goals/${goalId}`, {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
@@ -18,7 +18,7 @@ export const getGoal = async (goalId) => {
   return await response.json();
 };
 
-// CREATE GOAL
+
 export const createGoal = async (title, content = "") => {
   const response = await fetch(`${backend_url}/api/goals/`, {
     method: "POST",
@@ -32,7 +32,7 @@ export const createGoal = async (title, content = "") => {
   return await response.json();
 };
 
-// UPDATE GOAL
+
 export const updateGoal = async (goalId, updatedData) => {
   const response = await fetch(`${backend_url}/api/goals/${goalId}`, {
     method: "PUT",
@@ -46,7 +46,7 @@ export const updateGoal = async (goalId, updatedData) => {
   return await response.json();
 };
 
-// DELETE GOAL
+
 export const deleteGoal = async (goalId) => {
   const response = await fetch(`${backend_url}/api/goals/${goalId}`, {
     method: "DELETE",
