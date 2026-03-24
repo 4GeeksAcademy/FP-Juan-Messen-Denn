@@ -3,6 +3,12 @@ import { searchSounds } from "./freesound";
 import { useNavigate } from "react-router-dom";
 import "./freesound.css";
 import useGlobalReducer from "../../hooks/useGlobalReducer";
+import CALM from "../../assets/img/CALM.png";
+import STORM from "../../assets/img/STORM.png";
+import WIND from "../../assets/img/WIND.png";
+import SEA from "../../assets/img/SEA.png";
+import NATURE from "../../assets/img/NATURE.png";
+import CITY from "../../assets/img/CITY.png";
 
 export const SoundList = () => {
   const [playlistsData, setPlaylistsData] = useState([]);
@@ -10,17 +16,18 @@ export const SoundList = () => {
   const [error, setError] = useState("");
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [playingPlaylist, setPlayingPlaylist] = useState(null);
 
   const { dispatch } = useGlobalReducer();
   const navigate = useNavigate();
 
   const playlists = [
-    { name: "Relax", query: "relax ambient meditation calm", coverImage: "https://images.pexels.com/photos/3822622/pexels-photo-3822622.jpeg" },
-    { name: "Truenos", query: "thunder", coverImage: "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg" },
-    { name: "Viento", query: "wind", coverImage: "https://images.pexels.com/photos/459225/pexels-photo-459225.jpeg" },
-    { name: "Mar", query: "ocean", coverImage: "https://images.pexels.com/photos/533923/pexels-photo-533923.jpeg" },
-    { name: "Bosque", query: "forest", coverImage: "https://images.pexels.com/photos/15286/pexels-photo.jpg" },
-    { name: "Ciudad", query: "city ambience", coverImage: "https://images.pexels.com/photos/373965/pexels-photo-373965.jpeg" }
+    { name: "Relax",   query: "relax ambient meditation calm", coverImage: CALM },
+    { name: "Thunder", query: "thunder",                       coverImage: STORM },
+    { name: "Wind",    query: "wind",                          coverImage: WIND },
+    { name: "Ocean",   query: "ocean",                         coverImage: SEA },
+    { name: "Forest",  query: "forest",                        coverImage: NATURE },
+    { name: "City",    query: "city ambience",                 coverImage: CITY },
   ];
 
   useEffect(() => {
@@ -38,7 +45,7 @@ export const SoundList = () => {
         setPlaylistsData(results);
       } catch (err) {
         console.error(err);
-        setError("No se pudieron cargar las playlists");
+        setError("Could not load playlists");
       }
       setLoading(false);
     };
@@ -65,98 +72,100 @@ export const SoundList = () => {
   };
 
   const handlePlayInPlace = (pl) => {
-    dispatch({ type: "set_playlist", payload: pl });
+    if (playingPlaylist?.name === pl.name) {
+      setPlayingPlaylist(null);
+      dispatch({ type: "set_playing", payload: false });
+    } else {
+      setPlayingPlaylist(pl);
+      dispatch({ type: "set_playlist", payload: pl });
+    }
   };
 
-  if (loading) return <p>Cargando playlists...</p>;
+  if (loading) return <p className="sound-loading">Loading playlists...</p>;
   if (error) return <p className="text-danger">{error}</p>;
 
   return (
     <>
-      <button
-        onClick={() => navigate("/home")}
-        style={{
-          margin: "1rem 0 0 1rem",
-          padding: "8px 16px",
-          borderRadius: "8px",
-          border: "1.5px solid var(--color-divider)",
-          background: "transparent",
-          color: "var(--color-text-primary)",
-          cursor: "pointer",
-          fontSize: "0.9rem"
-        }}
-      >
-        ← Back to home
-      </button>
+      <div className="sound-btn-home-wrapper">
+        <button className="sound-btn-home" onClick={() => navigate("/home")}>
+          ← Home
+        </button>
+      </div>
 
-      <div className="sound-playlists container mt-5">
-        <h1>Sound Playlists</h1>
+      <div className="sound-hero">
+        <h1 className="sound-hero-title">Ambient Sounds</h1>
+        <p className="sound-hero-subtitle">
+          Choose the sounds that inspire your focus. Let the right atmosphere carry you through your session.
+        </p>
+      </div>
 
+      <div className="sound-playlists container">
         <div className="row">
           {playlistsData.map((pl) => (
             <div key={pl.name} className="col-md-4 mb-4">
               <div className="playlist-card h-100 shadow-sm">
-                <div className="playlist-image-container">
+                <div className="playlist-image-container" onClick={() => handlePlayInPlace(pl)}>
                   <img src={pl.coverImage} alt={pl.name} />
-                  <button className="play-button" onClick={() => handlePlayInPlace(pl)}>▶</button>
-                  <div className="overlay">{pl.name}</div>
+                  <button
+                    className="play-button"
+                    onClick={(e) => { e.stopPropagation(); handlePlayInPlace(pl); }}
+                  >
+                    {playingPlaylist?.name === pl.name ? "⏸" : "▶"}
+                  </button>
                 </div>
                 <div className="card-body">
-                  <button
-                    className="btn btn-primary btn-sm"
-                    onClick={() => openModal(pl)}
-                  >
-                    Ver
+                  <button className="btn btn-primary btn-sm" onClick={() => openModal(pl)}>
+                    Preview
                   </button>
-                  <button
-                    className="btn btn-outline btn-sm"
-                    onClick={() => handleSelect(pl)}
-                  >
-                    Seleccionar
+                  <button className="btn btn-outline btn-sm" onClick={() => handleSelect(pl)}>
+                    Select
                   </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
+      </div>
 
-        {selectedPlaylist && (
+      {selectedPlaylist && (
+        <div
+          className={`sound-modal-overlay ${modalVisible ? "visible" : ""}`}
+          onClick={closeModal}
+        >
           <div
-            className={`sound-modal-overlay ${modalVisible ? "visible" : ""}`}
-            onClick={closeModal}
+            className={`modal-playlist ${modalVisible ? "visible" : ""}`}
+            onClick={e => e.stopPropagation()}
           >
-            <div
-              className={`modal-playlist ${modalVisible ? "visible" : ""}`}
-              onClick={e => e.stopPropagation()}
-            >
-              <button className="close-modal" onClick={closeModal}>✕</button>
+            <div className="modal-playlist-header">
               <h2>{selectedPlaylist.name}</h2>
-              <div className="modal-sounds">
-                {selectedPlaylist.sounds.map((sound, index) => {
-                  const previewUrl = getPreview(sound);
-                  if (!previewUrl) return null;
-                  return (
-                    <div
-                      key={sound.id}
-                      className="modal-sound-item"
-                      style={{ animationDelay: `${index * 0.05}s` }}
-                    >
-                      <p>{sound.name}</p>
-                      <audio controls onPlay={(e) => {
-                        document.querySelectorAll(".modal-sounds audio").forEach(a => {
-                          if (a !== e.target) { a.pause(); a.currentTime = 0; }
-                        });
-                      }}>
-                        <source src={previewUrl} />
-                      </audio>
-                    </div>
-                  );
-                })}
-              </div>
+              <button className="close-modal" onClick={closeModal}>✕</button>
+            </div>
+            <div className="modal-sounds">
+              {selectedPlaylist.sounds.map((sound, index) => {
+                const previewUrl = getPreview(sound);
+                if (!previewUrl) return null;
+                return (
+                  <div
+                    key={sound.id}
+                    className="modal-sound-item"
+                    style={{ animationDelay: `${index * 0.05}s` }}
+                  >
+                    <p>{sound.name}</p>
+                    <audio controls>
+                      <source src={previewUrl} />
+                    </audio>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="modal-playlist-footer">
+              <button className="btn-primary" onClick={() => { handleSelect(selectedPlaylist); closeModal(); }}>
+                Select this playlist
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 };
