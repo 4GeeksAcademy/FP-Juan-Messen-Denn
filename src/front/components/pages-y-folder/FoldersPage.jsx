@@ -106,7 +106,7 @@ const FoldersPage = () => {
             <div className="fp-page">
                 <div className="fp-layout">
 
-                    {/* SIDEBAR — oculto en mobile cuando hay carpeta activa */}
+                    
                     <div className={`fp-sidebar ${showMobileMain ? 'd-none d-md-flex' : 'd-flex'}`}>
                         <div className="fp-sidebar-header">
                             <div className="d-flex align-items-center gap-2">
@@ -161,11 +161,11 @@ const FoldersPage = () => {
                         </div>
                     </div>
 
-                    {/* MAIN — oculto en mobile cuando no hay carpeta activa */}
+                    
                     <div className={`fp-main ${!showMobileMain ? 'd-none d-md-flex' : 'd-flex'}`}>
                         <div className="fp-main-header">
                             <div className="d-flex align-items-center gap-2">
-                                {/* Botón volver en mobile */}
+                                
                                 <button
                                     className="fp-btn-cancel d-md-none"
                                     onClick={() => setShowMobileMain(false)}
@@ -199,7 +199,7 @@ const FoldersPage = () => {
                 </div>
             </div>
 
-            {/* PAGE DETAIL */}
+           
             {openPage && (
                 <div className="fp-overlay" onClick={() => setOpenPage(null)}>
                     <div className="fp-detail" onClick={e => e.stopPropagation()}>
@@ -214,7 +214,7 @@ const FoldersPage = () => {
                 </div>
             )}
 
-            {/* MODAL CREAR CARPETA */}
+            
             {showFolderModal && (
                 <div className="fp-overlay" onClick={() => setShowFolderModal(false)}>
                     <div className="fp-modal" onClick={e => e.stopPropagation()}>
@@ -238,7 +238,7 @@ const FoldersPage = () => {
                 </div>
             )}
 
-            {/* MODAL MOVER PÁGINA */}
+            
             {moveModal && (
                 <div className="fp-overlay" onClick={() => setMoveModal(null)}>
                     <div className="fp-modal" onClick={e => e.stopPropagation()}>
@@ -272,7 +272,7 @@ const FoldersPage = () => {
                 </div>
             )}
 
-            {/* MODAL CONFIRMAR ELIMINAR */}
+            
             {confirmModal && (
                 <div className="fp-overlay" onClick={() => setConfirmModal(null)}>
                     <div className="fp-modal confirm" onClick={e => e.stopPropagation()}>

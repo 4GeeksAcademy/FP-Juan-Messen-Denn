@@ -169,7 +169,7 @@
 }
 
 
-/* ── Indicador de fortaleza de contraseña ── */
+
 .password-strength-wrapper {
     display: flex;
     flex-direction: column;
@@ -200,7 +200,7 @@
     transition: color 0.3s ease;
 }
 
-/* Checklist de requisitos */
+
 .password-rules {
     list-style: none;
     padding: 0;
@@ -233,14 +233,14 @@
     flex-shrink: 0;
 }
 
-/* Botón deshabilitado hasta que se cumplan los requisitos */
+
 .modal-btn-submit:disabled {
     opacity: 0.4;
     cursor: not-allowed;
     transform: none;
 }
 
-/* ── Mensaje de registro exitoso ── */
+
 .form-success {
     background: rgba(82, 168, 124, 0.12);
     border: 1px solid rgba(82, 168, 124, 0.4);
