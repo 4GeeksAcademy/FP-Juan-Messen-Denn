@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { LoginModal } from "./LoginModal";
 import { RegisterModal } from "./RegisterModal";
 import { getGoals, updateGoal, deleteGoal, createGoal } from "./goals/GoalsService";
+import pomifyLogo from "../assets/img/pomify_logo.png";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -127,9 +128,8 @@ export const Navbar = () => {
         <div className="navbar-content">
 
           
-          <div className="navbar-left" onClick={() => navigate("/about")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
-            <span style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", fontWeight: "600", border: "1.5px solid var(--color-text-secondary)", borderRadius: "50%", width: "16px", height: "16px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>i</span>
-            <span className="navbar-brand">POMIFY</span>
+          <div className="navbar-left" onClick={() => navigate("/about")} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+            <img src={pomifyLogo} alt="Pomify" style={{ height: "32px", width: "auto" }} />
           </div>
 
           
