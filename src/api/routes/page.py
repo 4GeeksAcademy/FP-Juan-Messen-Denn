@@ -37,10 +37,16 @@ def update_page(id):
         return jsonify({"error": "Request body is required"}), 400
     title = data.get("title")
     content = data.get("content")
-    if not title or not content:
-        return jsonify({"error": "title and content are required"}), 400
-    page.title = title
-    page.content = content
+    new_folder_id = data.get("folder_id")
+    if new_folder_id:
+        new_folder = Folder.query.get(new_folder_id)
+        if not new_folder or new_folder.user_id != int(current_user_id):
+            return jsonify({"error": "Folder no válido"}), 403
+        page.folder_id = new_folder_id
+    if title:
+        page.title = title
+    if content:
+        page.content = content
     db.session.commit()
     return jsonify(page.serialize()), 200
 

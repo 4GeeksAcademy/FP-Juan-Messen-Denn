@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FolderPanel from "./FolderPanel";
 import PagePanel from "./PagePanel";
-import { getPages, createPage, updatePage, deletePage } from "./PageServices";
+import { getPages, createPage, updatePage, deletePage, movePage } from "./PageServices";
 import { getFolders, createFolder, updateFolder, deleteFolder } from "./FolderServices";
 import "./FoldersPage.css"
 
@@ -258,12 +258,15 @@ const FoldersPage = () => {
                         </div>
                         <div className="fp-modal-actions">
                             <button className="fp-btn-cancel" onClick={() => setMoveModal(null)}>Cancel</button>
-                            <button className="fp-btn-primary" disabled={!moveTarget} onClick={() => {
+                            <button className="fp-btn-primary" disabled={!moveTarget} onClick={async () => {
                                 const targetFolder = folders.find(f => f.id === parseInt(moveTarget));
-                                setPages(prev => prev.map(p => p.id === moveModal.id
-                                    ? { ...p, folder: { id: targetFolder.id, title: targetFolder.title } }
-                                    : p
-                                ));
+                                const result = await movePage(moveModal.id, parseInt(moveTarget));
+                                if (result) {
+                                    setPages(prev => prev.map(p => p.id === moveModal.id
+                                        ? { ...p, folder: { id: targetFolder.id, title: targetFolder.title } }
+                                        : p
+                                    ));
+                                }
                                 setMoveModal(null);
                                 setMoveTarget("");
                             }}>Move</button>

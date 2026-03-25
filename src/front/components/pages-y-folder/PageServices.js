@@ -38,6 +38,19 @@ export const updatePage = async (id, title, content) => {
   return await response.json();
 };
 
+export const movePage = async (pageId, folderId) => {
+  const response = await fetch(`${backend_url}/api/pages/${pageId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify({ folder_id: folderId })
+  });
+  if (!response.ok) return false;
+  return await response.json();
+};
+
 export const deletePage = async (id) => {
   const response = await fetch(`${backend_url}/api/pages/${id}`, {
     method: "DELETE",
